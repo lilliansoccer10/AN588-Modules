@@ -5,7 +5,7 @@ output: html_document
 date: "2023-09-19"
 ---
 
-Commands I used throughout Module 6:
+##Module 6 Commands
 
 install.packages("dplyr")
 install.packages("ggplot2")
@@ -221,8 +221,262 @@ s[109,]
 s[71,,109,]
 s[71,],[109,]
 s[c(71,109),]
-#vervet monkeys are more sexually dimorphic
-#wolly monkeys have a larger average female body mass
+
+
+ --- vervet monkeys are more sexually dimorphic
+----wolly monkeys have a larger average female body mass
+
+----------SECOND PART OF CHALLENGE 8 ---------
+
+s <- d %>%
++     mutate(Binomial = paste(Genus, Species, sep = " ")) %>%
++     select(Binomial, Body_mass_female_mean, Body_mass_male_mean, Mass_Dimorphism) %>%
++     group_by(Binomial) %>%
++     summarise(avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
++                                                                             na.rm = TRUE), avgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
+> s
+# A tibble: 213 × 4
+   Binomial                     avgF  avgM  avgBMD
+   <chr>                       <dbl> <dbl>   <dbl>
+ 1 Allenopithecus nigroviridis  3180  6130   1.93 
+ 2 Allocebus trichotis            84    92   1.10 
+ 3 Alouatta belzebul            5520  7270   1.32 
+ 4 Alouatta caraya              4240  6525   1.54 
+ 5 Alouatta guariba             4550  5800   1.27 
+ 6 Alouatta palliata            5350  7150   1.34 
+ 7 Alouatta pigra               6430 11400   1.77 
+ 8 Alouatta seniculus           5210  6690   1.28 
+ 9 Aotus azarai                 1230  1180   0.959
+10 Aotus brumbacki               NaN   NaN NaN    
+# ℹ 203 more rows
+# ℹ Use `print(n = ...)` to see more rows
+
+print(s, n=203)
+# A tibble: 213 × 4
+    Binomial                         avgF     avgM  avgBMD
+    <chr>                           <dbl>    <dbl>   <dbl>
+  1 Allenopithecus nigroviridis    3180     6130     1.93 
+  2 Allocebus trichotis              84       92     1.10 
+  3 Alouatta belzebul              5520     7270     1.32 
+  4 Alouatta caraya                4240     6525     1.54 
+  5 Alouatta guariba               4550     5800     1.27 
+  6 Alouatta palliata              5350     7150     1.34 
+  7 Alouatta pigra                 6430    11400     1.77 
+  8 Alouatta seniculus             5210     6690     1.28 
+  9 Aotus azarai                   1230     1180     0.959
+ 10 Aotus brumbacki                 NaN      NaN   NaN    
+ 11 Aotus lemurinus                 716.     753.    1.05 
+ 12 Aotus nancymaae                 780      794     1.02 
+ 13 Aotus nigriceps                1040      875     0.841
+ 14 Aotus trivirgatus               933.    1044.    1.12 
+ 15 Aotus vociferans                698      708     1.01 
+ 16 Arctocebus calabarensis         306      312     1.02 
+ 17 Ateles belzebuth               8484.    7850     0.925
+ 18 Ateles fusciceps               9160     8890     0.971
+ 19 Ateles geoffroyi               7290     7780     1.07 
+ 20 Ateles paniscus                8070     8490     1.05 
+ 21 Avahi laniger                  1307     1106     0.846
+ 22 Avahi occidentalis              766.     836.    1.09 
+ 23 Brachyteles arachnoides        8070     9610     1.19 
+ 24 Bunopithecus hoolock           6350     7106.    1.12 
+ 25 Cacajao calvus                 2880     3450     1.20 
+ 26 Cacajao melanocephalus         2710     3160     1.17 
+ 27 Callicebus donacophilus         909      991     1.09 
+ 28 Callicebus hoffmannsi          1030     1090     1.06 
+ 29 Callicebus moloch               956     1020     1.07 
+ 30 Callicebus personatus          1380     1270     0.92 
+ 31 Callicebus torquatus           1210     1280     1.06 
+ 32 Callimico goeldii               468      499     1.07 
+ 33 Callithrix argentata            360      330     0.917
+ 34 Callithrix aurita               NaN      NaN   NaN    
+ 35 Callithrix geoffroyi            NaN      NaN   NaN    
+ 36 Callithrix humeralifera         380      360     0.947
+ 37 Callithrix jacchus              322      318     0.988
+ 38 Callithrix kuhlii               NaN      NaN   NaN    
+ 39 Callithrix penicillata          312.     344.    1.10 
+ 40 Callithrix pygmaea              122      110     0.902
+ 41 Cebus albifrons                2290     3180     1.39 
+ 42 Cebus apella                   2489.    3383.    1.36 
+ 43 Cebus capucinus                2436.    3286.    1.35 
+ 44 Cebus olivaceus                2633.    3229.    1.23 
+ 45 Cebus xanthosternos            2167.    2714.    1.25 
+ 46 Cercocebus agilis              5660     9500     1.68 
+ 47 Cercocebus galeritus           5260     9610     1.83 
+ 48 Cercocebus torquatus           5500     9470     1.72 
+ 49 Cercocebus torquatus_atys      6200    11000     1.77 
+ 50 Cercopithecus albogularis      4262.    6978.    1.64 
+ 51 Cercopithecus ascanius         2901     4528.    1.56 
+ 52 Cercopithecus campbelli        2700     4500     1.67 
+ 53 Cercopithecus cephus           2880     4290     1.49 
+ 54 Cercopithecus diana            3900     5200     1.33 
+ 55 Cercopithecus erythrotis       2900     3600     1.24 
+ 56 Cercopithecus hamlyni          3360     5490     1.63 
+ 57 Cercopithecus lhoesti          3450     5970     1.73 
+ 58 Cercopithecus mitis            4628     7591.    1.64 
+ 59 Cercopithecus mona             2733     4705     1.72 
+ 60 Cercopithecus neglectus        4130     7350     1.78 
+ 61 Cercopithecus nictitans        4260     6670     1.57 
+ 62 Cercopithecus petaurista       2918.    4300     1.47 
+ 63 Cercopithecus pogonias         2900     4260     1.47 
+ 64 Cercopithecus preussi           NaN      NaN   NaN    
+ 65 Cercopithecus solatus          3920     6890     1.76 
+ 66 Cercopithecus wolfi            2870     3910     1.36 
+ 67 Cheirogaleus major              362      438     1.21 
+ 68 Cheirogaleus medius             139      140     1.01 
+ 69 Chiropotes satanas             2960     3100     1.05 
+ 70 Chlorocebus aethiops           3039     4400     1.45 
+ 71 Chlorocebus pygerythrus        3576.    5071.    1.42 
+ 72 Chlorocebus sabaeus            3700     4924.    1.33 
+ 73 Colobus angolensis             7570     9680     1.28 
+ 74 Colobus guereza                7506.    9673     1.29 
+ 75 Colobus polykomos              8300     9900     1.19 
+ 76 Colobus satanas                7420    10400     1.40 
+ 77 Colobus vellerosus             7220     8420     1.17 
+ 78 Daubentonia madagascariensis   2490     2620     1.05 
+ 79 Erythrocebus patas             6500    12400     1.91 
+ 80 Eulemur albifrons              2281     2390     1.05 
+ 81 Eulemur albocollaris           2130     2150     1.01 
+ 82 Eulemur collaris                NaN      NaN   NaN    
+ 83 Eulemur coronatus              1080     1280     1.18 
+ 84 Eulemur fulvus                 2333.    2250     0.964
+ 85 Eulemur macaco                 2430     2350     0.967
+ 86 Eulemur mongoz                 1282.    1143.    0.892
+ 87 Eulemur rubriventer            1940     1980     1.02 
+ 88 Eulemur rufus                  2270     2170     0.956
+ 89 Eulemur sanfordi               1830     1870     1.02 
+ 90 Euoticus elegantulus            261      287     1.1  
+ 91 Galago matschiei                212      207     0.976
+ 92 Galago moholi                   147.     150.    1.02 
+ 93 Galago senegalensis             188      200.    1.07 
+ 94 Galagoides demidoff              73.1     76.2   1.04 
+ 95 Galagoides zanzibaricus         137      149     1.09 
+ 96 Gorilla beringei              97500   162500     1.67 
+ 97 Gorilla gorilla               71500   170400     2.38 
+ 98 Hapalemur aureus                NaN      NaN   NaN    
+ 99 Hapalemur griseus               670      748     1.12 
+100 Hapalemur griseus_alaotrensis  1251     1228     0.982
+101 Hapalemur simus                1300     2150     1.65 
+102 Hylobates agilis               5820     5880     1.01 
+103 Hylobates klossii              5920     5670     0.958
+104 Hylobates lar                  5381.    5809.    1.08 
+105 Hylobates moloch               6250     6580     1.05 
+106 Hylobates muelleri             6010.    5632.    0.937
+107 Hylobates pileatus             5440     5500     1.01 
+108 Indri indri                    6840     5830     0.852
+109 Lagothrix lagotricha           7020     7280     1.04 
+110 Lemur catta                    2210     2210     1    
+111 Leontopithecus chrysomelas      700      610     0.871
+112 Leontopithecus chrysopygus      NaN      NaN   NaN    
+113 Leontopithecus rosalia          598      620     1.04 
+114 Lepilemur dorsalis              923      817     0.885
+115 Lepilemur edwardsi              934      928     0.994
+116 Lepilemur leucopus              594      617     1.04 
+117 Lepilemur microdon              NaN      NaN   NaN    
+118 Lepilemur mustelinus            NaN      NaN   NaN    
+119 Lepilemur ruficaudatus          803      806     1.00 
+120 Lophocebus albigena            6010     7890     1.31 
+121 Lophocebus aterrimus           5760     7840     1.36 
+122 Loris lydekkerianus             269      264     0.981
+123 Loris tardigradus               193      192     0.995
+124 Macaca arctoides               8400    12200     1.45 
+125 Macaca assamensis              6900    11300     1.64 
+126 Macaca cyclopis                4940     6000     1.22 
+127 Macaca fascicularis            3518.    4984.    1.42 
+128 Macaca fuscata                 8030    10970     1.37 
+129 Macaca leonina                 4763.    6520.    1.37 
+130 Macaca mulatta                 5670.    7915.    1.40 
+131 Macaca nemestrina              6539.   11103.    1.70 
+132 Macaca nigra                   5470     9890     1.81 
+133 Macaca ochreata                2600     4200     1.62 
+134 Macaca radiata                 3856.    6312.    1.64 
+135 Macaca silenus                 6100     8900     1.46 
+136 Macaca sinica                  3200     5680     1.78 
+137 Macaca sylvanus                9625    14530.    1.51 
+138 Macaca thibetana               9500    15200     1.6  
+139 Mandrillus leucophaeus        12500    17500     1.4  
+140 Mandrillus sphinx             12800    34400     2.69 
+141 Microcebus murinus               67.2     63     0.938
+142 Microcebus myoxinus              30       31     1.03 
+143 Microcebus rufus                 42       43     1.02 
+144 Miopithecus talapoin           1560     1940     1.24 
+145 Mirza coquereli                 312      311     0.997
+146 Nasalis larvatus               9730.   19392.    1.99 
+147 Nomascus concolor              7620     7790     1.02 
+148 Nomascus gabriellae            7320     7410     1.01 
+149 Nomascus leucogenys             NaN      NaN   NaN    
+150 Nycticebus bengalensis         1020     1100     1.08 
+151 Nycticebus coucang              626      679     1.08 
+152 Nycticebus pygmaeus             376      462     1.23 
+153 Otolemur crassicaudatus        1110     1190     1.07 
+154 Otolemur garnettii              734      794     1.08 
+155 Pan paniscus                  33200    45000     1.36 
+156 Pan troglodytes               40367.   49567.    1.23 
+157 Papio anubis                  13300    23000     1.73 
+158 Papio cynocephalus            12000    22300     1.86 
+159 Papio hamadryas               10300    18000     1.75 
+160 Papio ursinus                 14800    29800     2.01 
+161 Perodicticus potto              868.     802.    0.924
+162 Phaner furcifer                 350      328     0.937
+163 Piliocolobus badius            8210     8360     1.02 
+164 Piliocolobus kirkii            5460     5800     1.06 
+165 Piliocolobus preussi            NaN      NaN   NaN    
+166 Piliocolobus rufomitratus       NaN      NaN   NaN    
+167 Piliocolobus tephrosceles      7258     9560.    1.32 
+168 Pithecia irrorata              2070     2250     1.09 
+169 Pithecia pithecia              1580     1940     1.23 
+170 Pongo abelii                  41148    84482.    2.05 
+171 Pongo pygmaeus                36948.   80137.    2.17 
+172 Presbytis comata               6710     6680     0.996
+173 Presbytis melalophos           6567.    6554.    0.998
+174 Procolobus verus               4200     4700     1.12 
+175 Propithecus coquereli          3757     3700     0.985
+176 Propithecus deckenii           3633.    3430     0.944
+177 Propithecus diadema            6210     6050     0.974
+178 Propithecus edwardsi           5895     5469.    0.928
+179 Propithecus tattersalli        3590     3390     0.944
+180 Propithecus verreauxi          2980     2930     0.983
+181 Pygathrix nemaeus              8440    11000     1.30 
+182 Rhinopithecus avunculus         NaN      NaN   NaN    
+183 Rhinopithecus bieti             NaN      NaN   NaN    
+184 Rhinopithecus roxellana       11600    17900     1.54 
+185 Saguinus bicolor                430      428     0.995
+186 Saguinus fuscicollis            397.     405.    1.02 
+187 Saguinus geoffroyi              534.     499.    0.934
+188 Saguinus imperator              475      474     0.998
+189 Saguinus leucopus               539      510     0.946
+190 Saguinus midas                  591      535     0.905
+191 Saguinus mystax                 538      629.    1.17 
+192 Saguinus niger                  370      380     1.03 
+193 Saguinus oedipus                445.     417.    0.936
+194 Saguinus tripartitus            NaN      NaN   NaN    
+195 Saimiri boliviensis             750     1020     1.36 
+196 Saimiri oerstedii               680      897     1.32 
+197 Saimiri sciureus                742.     855     1.15 
+198 Semnopithecus entellus        11340    18144     1.6  
+199 Symphalangus syndactylus      10710    11880     1.11 
+200 Tarsius bancanus                123      128     1.04 
+201 Tarsius dentatus                NaN      NaN   NaN    
+202 Tarsius syrichta                117      134     1.14 
+203 Theropithecus gelada          11700    19000     1.62 
+# ℹ 10 more rows
+# ℹ Use `print(n = ...)` to see more rows
+
+> s[c(71,109),]
+# A tibble: 2 × 4
+  Binomial                 avgF  avgM avgBMD
+  <chr>                   <dbl> <dbl>  <dbl>
+1 Chlorocebus pygerythrus 3576. 5071.   1.42
+2 Lagothrix lagotricha    7020  7280    1.04
+
+> s[c(71,109),]
+# A tibble: 2 × 4
+  Binomial                 avgF  avgM avgBMD
+  <chr>                   <dbl> <dbl>  <dbl>
+1 Chlorocebus pygerythrus 3576. 5071.   1.42
+2 Lagothrix lagotricha    7020  7280    1.04
+> y <- s[c(71,109),]
+> y
+
 s <-                                                             #to create dataframe "s"
 d %>%                                                          #take dataframe "d"
 group_by(Family) %>%                                           #Group it by Family
@@ -298,7 +552,357 @@ s <- s[order(s$Family),]
 s[c(1,3),]
 p <- ggplot(subset(data = s[c(1,3),]), aes(x = Family, y = log(Body_mass_female_mean)))  #define the variables
 
-I'm on the last challenge of Module 6. I can't figure out how to plot just two of the family names. 
 
-Module 7
 
+
+##Module 7 Notes
+
+> library(sciplot)
+> x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000)
+> gm1 <- function(x) {
++     prod(x)^(1/length(x))
++ }
+> gm1(x)
+[1] 13.50559
+> gm2 <- function(x) {
++     exp(mean(log(x)))
++ }
+> gm2(x)
+[1] 13.50559
+> #Challenge 1 Completed
+> #Challenge 2
+> ss1 <- function(x) {
++     sum((x - mean(x))^2)
++ }
+> ss1(x)
+[1] 917183.3
+> ss2 <- function(x) {
++     sum(x^2) - length(x) * mean(x)^2
++ }
+> ss2(x)
+[1] 917183.3
+> ss3 <- function(x) {
++     sum(x^2) - (sum(x))^2/length(x)
++ }
+> ss3(x)
+[1] 917183.3
+> pop_v <- function(x) {
++     sum((x - mean(x))^2)/(length(x))
++ }
+> pop_v(x)
+[1] 61145.56
+> #Challenge 3
+> sample_v <- function(x) {
++     sum((x - mean(x))^2)/(length(x) - 1)
++ }
+> sample_v(x)
+[1] 65513.1
+> var(sample_v(x))
+[1] NA
+> var(sample_v(x), na.rm=TRUE)
+[1] NA
+> sample_v
+function(x) {
+    sum((x - mean(x))^2)/(length(x) - 1)
+}
+<bytecode: 0x13e04a720>
+> var(x)
+[1] 65513.1
+> plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample size", ylab = "Variance")
+Error in plot.new() : figure margins too large
+> for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
++     for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
++         for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
++         {
++             for (i in 1:50) # 50 replicates for (i in 1:50) # 50 replicates
++             {
++                 x <- rnorm(n, mean = 10, sd = 2)
++                 points(n, var(x))
++             }
++         }
+Error in plot.xy(xy.coords(x, y), type = type, ...) : 
+  plot.new has not been called yet
+> plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample size", ylab = "Variance")
+> for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
++     for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
++         for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
++         {
++             for (i in 1:50) # 50 replicates for (i in 1:50) # 50 replicates
++             {
++                 x <- rnorm(n, mean = 10, sd = 2)
++                 points(n, var(x))
++             }
++         }
+> pop_sd <- function(x) {
++     sqrt(pop_v(x))
++ }
+> pop_sd(x)
+[1] 1.926058
+> sample_sd <- function(x) {
++     sqrt(sample_v(x))
++ }
+> sample_sd(x)
+[1] 1.945612
+> sd(x)
+[1] 1.945612
+> #Challenge 4
+> SE1 <- function(x) {
++     sqrt(sample_v(x)/length(x))
++ }
+> SE1(x)
+[1] 0.2751511
+> var(x)
+[1] 3.785407
+> var(x)/length(x)
+[1] 0.07570813
+> sqrt(var(x)/length(x))
+[1] 0.2751511
+> library(sciplot)
+> se(x)
+[1] 0.2751511
+> set.seed(1)
+> x <- rnorm(10000, 0, 1)
+> hist(x)
+> x <- seq(from = -4, to = 4, by = 0.01)
+> plot(x, dnorm(x), cex = 0.4)
+> plot(x, pnorm(x), cex = 0.4)
+> x <- seq(from = 0, to = 1, by = 0.01)
+> plot(qnorm(x), x, cex = 0.4)
+> x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+> m <- mean(x)
+> n <- length(x)
+> v <- var(x)
+> s <- sd(x)
+> e <- sqrt(v/n)
+> upper <- mean(x) + qnorm(0.975, mean = 0, sd = 1) * se(x)
+> lower <- mean(x) + qnorm(0.025, mean = 0, sd = 1) * se(x)  # or lower <- mean(x) - qnorm(0.975)*se(x)
+> ci <- c(lower, upper)
+> ci
+[1]  5.736829 10.263171
+> upper <- m + qnorm(0.975, mean = 0, sd = 1) * e
+> lower <- m + qnorm(0.025, mean = 0, sd = 1) * e  # or lower <- m - qnorm(0.975)*e
+> ci <- c(lower, upper)
+> ci
+[1]  5.736829 10.263171
+> normalCI = function(x, CIlevel = 0.95) {
++     upper = m + qnorm(1 - (1 - CIlevel)/2) * sqrt(var(x)/length(x))
++     lower = m + qnorm((1 - CIlevel)/2) * sqrt(var(x)/length(x))
++     ci <- c(lower, upper)
++     return(ci)
++ }
+> normalCI(x, 0.95)  # call the function
+[1]  5.736829 10.263171
+> set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+> n <- 15
+> for (i in 1:10000) {
++     set[i] <- mean(sample(x, n, replace = TRUE))
++ }
+> quantile(set)
+       0%       25%       50% 
+ 3.200000  7.200000  8.000000 
+      75%      100% 
+ 8.733333 12.200000 
+> quantile(set, c(0.025, 0.975))
+    2.5%    97.5% 
+ 5.80000 10.13333 
+> #Challenge 5
+> set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+> n <- 5
+> for (i in 1:10000) {
++     set[i] <- mean(sample(x, n, replace = TRUE))
++ }
+> quantile(set)
+  0%  25%  50%  75% 100% 
+ 1.6  6.6  8.0  9.4 14.4 
+> quantile(set)
+  0%  25%  50%  75% 100% 
+ 1.6  6.6  8.0  9.4 14.4 
+> quantile(set, c(0.025, 0.975))
+ 2.5% 97.5% 
+  4.2  11.8 
+> n <- 50
+> > for (i in 1:10000) {
+Error: unexpected '>' in ">"
+> set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+> n <- 50
+> for (i in 1:10000) {
++     set[i] <- mean(sample(x, n, replace = TRUE))
++ }
+> quantile(set)
+   0%   25%   50%   75%  100% 
+ 5.64  7.60  8.00  8.40 10.72 
+> quantile(set, c(0.025, 0.975))
+ 2.5% 97.5% 
+ 6.82  9.16 
+> set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+> n <- 15
+> for (i in 1:10000) {
++     set[i] <- mean(sample(x, n, replace = TRUE))
++ }
+> quantile(set, c(0.025, 0.975))
+ 2.5% 97.5% 
+  5.8  10.2 
+> set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+> n <- 500
+> for (i in 1:10000) {
++     set[i] <- mean(sample(x, n, replace = TRUE))
++ }
+> quantile(set, c(0.025, 0.975))
+ 2.5% 97.5% 
+7.622 8.382 
+
+-- The CI calculated by simulation is reassuringly close to that calculated based on assuming normal distribution. It is not identical, however, due to slightly different values due to the randomization within the simulation. 
+--As the number of observations drawn from the sample with replacement (n) decreases, the width of the CI increases. As the number increases, it decreases. 
+
+##Module 7 Commands
+
+remotes::install_github("jmcphers/rsrecovr")
+install.packages(sciplot)
+install.packages("sciplot")
+library(sciplot)
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000)
+gm1 <- function(x) {
+prod(x)^(1/length(x))
+}
+gm1(x)
+gm2 <- function(x) {
+exp(mean(log(x)))
+}
+gm2(x)
+Challenge 1 
+Challenge 2
+ss1 <- function(x) {
+sum((x - mean(x))^2)
+}
+ss1(x)
+ss2 <- function(x) {
+sum(x^2) - length(x) * mean(x)^2
+}
+ss2(x)
+ss3 <- function(x) {
+sum(x^2) - (sum(x))^2/length(x)
+}
+ss3(x)
+pop_v <- function(x) {
+sum((x - mean(x))^2)/(length(x))
+}
+pop_v(x)
+Challenge 3
+sample_v <- function(x) {
+sum((x - mean(x))^2)/(length(x) - 1)
+}
+sample_v(x)
+var(sample_v(x))
+var(sample_v(x), na.rm=TRUE)
+sample_v
+var(x)
+plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample size", ylab = "Variance")
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
+{
+for (i in 1:50) # 50 replicates for (i in 1:50) # 50 replicates
+{
+x <- rnorm(n, mean = 10, sd = 2)
+points(n, var(x))
+}
+}
+plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample size", ylab = "Variance")
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
+for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
+{
+for (i in 1:50) # 50 replicates for (i in 1:50) # 50 replicates
+{
+x <- rnorm(n, mean = 10, sd = 2)
+points(n, var(x))
+}
+}
+pop_sd <- function(x) {
+sqrt(pop_v(x))
+}
+pop_sd(x)
+sample_sd <- function(x) {
+sqrt(sample_v(x))
+}
+sample_sd(x)
+sd(x)
+Challenge 4
+SE1 <- function(x) {
+sqrt(sample_v(x)/length(x))
+}
+SE1(x)
+var(x)
+var(x)/length(x)
+sqrt(var(x)/length(x))
+library(sciplot)
+se(x)
+set.seed(1)
+x <- rnorm(10000, 0, 1)
+hist(x)
+x <- seq(from = -4, to = 4, by = 0.01)
+plot(x, dnorm(x), cex = 0.4)
+plot(x, pnorm(x), cex = 0.4)
+x <- seq(from = 0, to = 1, by = 0.01)
+plot(qnorm(x), x, cex = 0.4)
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+m <- mean(x)
+n <- length(x)
+v <- var(x)
+s <- sd(x)
+e <- sqrt(v/n)
+upper <- mean(x) + qnorm(0.975, mean = 0, sd = 1) * se(x)
+lower <- mean(x) + qnorm(0.025, mean = 0, sd = 1) * se(x)  # or lower <- mean(x) - qnorm(0.975)*se(x)
+ci <- c(lower, upper)
+ci
+upper <- m + qnorm(0.975, mean = 0, sd = 1) * e
+lower <- m + qnorm(0.025, mean = 0, sd = 1) * e  # or lower <- m - qnorm(0.975)*e
+ci <- c(lower, upper)
+ci
+normalCI = function(x, CIlevel = 0.95) {
+upper = m + qnorm(1 - (1 - CIlevel)/2) * sqrt(var(x)/length(x))
+lower = m + qnorm((1 - CIlevel)/2) * sqrt(var(x)/length(x))
+ci <- c(lower, upper)
+return(ci)
+}
+normalCI(x, 0.95)  # call the function
+set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+n <- 15
+for (i in 1:10000) {
+set[i] <- mean(sample(x, n, replace = TRUE))
+}
+quantile(set)
+quantile(set, c(0.025, 0.975))
+Challenge 5
+set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+n <- 5
+for (i in 1:10000) {
+set[i] <- mean(sample(x, n, replace = TRUE))
+}
+quantile(set)
+quantile(set)
+quantile(set, c(0.025, 0.975))
+n <- 50
+> for (i in 1:10000) {
+set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+n <- 50
+for (i in 1:10000) {
+set[i] <- mean(sample(x, n, replace = TRUE))
+}
+quantile(set)
+quantile(set, c(0.025, 0.975))
+set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+n <- 15
+for (i in 1:10000) {
+set[i] <- mean(sample(x, n, replace = TRUE))
+}
+quantile(set, c(0.025, 0.975))
+set <- NULL  # sets up a dummy variable to hold our 10000 simulations
+n <- 500
+for (i in 1:10000) {
+set[i] <- mean(sample(x, n, replace = TRUE))
+}
+quantile(set, c(0.025, 0.975))
+2.5% 97.5% 
+7.622 8.382 
+savehistory("~/Documents/GitHub/AN588-Week3-BackUp/Module 7.Rhistory")
