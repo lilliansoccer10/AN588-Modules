@@ -1,10 +1,305 @@
 ---
 title: "Modules 6 + 7 Notes"
+author: "Lillian Holden"
 output: html_document
 date: "2023-09-19"
 ---
 
-testing to see if I can commit this to github
+Commands I used throughout Module 6:
+
+install.packages("dplyr")
+install.packages("ggplot2")
+library(dplyr,ggplot2)
+library(dplyr)
+library(ggplot2)
+library(curl)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/Country-Data-2016.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+summary(d)
+names(d)
+summary(d)
+median(d), na.rm=TRUE
+median(d)
+median("country", na.rm=TRUE)
+median(d,na.rm=TRUE)
+summary(d)
+names(d)
+median(names(d),na.rm=TRUE)
+median(d)
+median(d,na.rm+FALSE)
+median("names(d)")
+median("mollucs")
+summary(d)
+data.numbers=sapply(d,as.numeric)
+summary(d)
+median("population")
+median("population", na.rm=TRUE)
+d$density <- d$population/d$area
+d <- d[order(-d$density), ]
+d[1:10, ]
+d <- d[order(d$density), ]
+d[1:10, ]
+summary(d)
+median(c("area","population"),na.rm=TRUE)
+d
+median(population)
+median("population", na.rm=TRUE)
+median(d$population, na.rm=TRUE)
+summary(d)
+median(d$country)
+median(d$country,na.rm = FALSE)
+median(d$country,na.rm = TRUE)
+median(d$country, na.rm=TRUE)
+median(d$area,na.rm = TRUE)
+new <- d[grep("^[A-F]", d$country), ]
+summary(new)
+mean(new$population, na.rm = TRUE)
+mean(new$area, na.rm = TRUE)
+new <- d[grep("^[1-20]", d$country), ]
+summary(new)
+mean(new$population, na.rm = TRUE)
+d$density <- d$population/d$area
+d <- d[order(-d$density), ]
+d[1:20, ]
+d <- d[order(d$density), ]
+d[1:20, ]
+median(d$population, na.rm=TRUE)
+x <- d[order(d$density), ]
+d[1:20, ]
+median(d[1:20]$population, na.rm = )
+median(dd[1:20, ]$population, na.rm=TRUE)
+median(d[1:20, ]$population, na.rm=TRUE)
+median(d[1:20, ]$area, na.rm=TRUE)
+new <- d[grep("^[A-F]", d$country), ]
+summary(new)
+mean(new$population, na.rm = TRUE)
+mean(new$area, na.rm = TRUE)
+summary(d)
+par(mfrow = c(2, 3))
+boxplot(d$population)
+boxplot(log(d$population))
+boxplot(d$area)
+boxplot(log(d$area))
+barplot(d$population)
+barplot(d$area)
+log(d$population)
+par(mfrow=c(2,3))
+boxplot(log(d$population))
+par(mfrow = c(2, 3))
+boxplot(d$population)
+boxplot(log(d$population))
+boxplot(d$area)
+boxplot(log(d$area))
+barplot(d$population)
+barplot(d$area)
+par(mfrow = c(1, 2))  # gives us two panels
+attach(d)
+hist(log(population), freq = FALSE, col = "red", main = "Plot 1", xlab = "log(population size)",
+ylab = "density", ylim = c(0, 0.2))
+hist(log(area), freq = FALSE, col = "red", main = "Plot 2", xlab = "log(area)",
+ylab = "density", ylim = c(0, 0.2))
+v=mean(log(population)))
+par(mfrow = c(1, 1))  # set up one panel and redraw the log(population) histogram
+hist(log(population), freq = FALSE, col = "white", main = "My Plot with Mean and Density",
+xlab = "log(population size)", ylab = "density", ylim = c(0, 0.2))
+abline(v = mean(log(population), na.rm = TRUE), col = "blue")
+lines(density(log(population), na.rm = TRUE), col = "green")
+detach(d)
+sort(table(d$govt_form), decreasing = TRUE)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/KamilarAndCooperData.csv")
+d <- read.csv(f, header = TRUE, stringsAsFactors = FALSE)
+attach(d)
+head(d)
+summary(d)
+boxplot(log(Body_mass_female_mean) ~ Family, d)
+ggplot
+ggplot(log(Body_mass_female_mean) ~ Family, d)
+ggplot(mpg, aes(displ, hwy, colour = class)) +
+geom_point(log(Body_mass_female_mean) ~ Family, d)
+summary(d)
+library(ggplot2)
+p <- ggplot(data = d, aes(x = Family, y = log(Body_mass_female_mean)))  #define the variables
+p <- p + geom_boxplot()  #graph them in a boxplot
+p <- p + theme(axis.text.x = element_text(angle = 90))  #put x-axis names at 90deg
+p <- p + ylab("log(Female Body Mass)")  #rename y-axis title
+p  #show me the graph
+attach(d)
+par(mfrow = c(1, 2))
+plot(x = Body_mass_female_mean, y = Brain_Size_Female_Mean)
+plot(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean))
+detach(d)
+p <- ggplot(data = d, aes(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean),
+color = factor(Family)))  # first, we build a plot object and color points by Family
+p <- p + xlab("log(Female Body Mass)") + ylab("log(Female Brain Size)")  # then we modify the axis labels
+p <- p + geom_point()  # then we make a scatterplot
+p <- p + theme(legend.position = "bottom", legend.title = element_blank())  # then we modify the legend
+p  # and, finally, we plot the object
+p <- p + facet_wrap(~Family, ncol = 4)
+p <- p + theme(legend.position = "none")
+p
+p <- p + geom_smooth(method = "lm", fullrange = TRUE)
+p
+p <- ggplot(data = d, aes(x = log(Body_mass_female_mean), y = log(MaxLongevity_m)))
+p <- p + geom_point()
+p <- p + geom_smooth(method = "lm")
+p
+aggregate(d$Body_mass_female_mean ~ d$Family, FUN = "mean", na.rm = TRUE)
+aggregate(x = d["Body_mass_female_mean"], by = d["Family"], FUN = "mean", na.rm = TRUE)
+library(dplyr)
+s <- filter(d, Family == "Hominidae" & Mass_Dimorphism > 2)
+head(s)  # filtering a data frame for certain rows...
+s <- arrange(d, Family, Genus, Body_mass_male_mean)  # rearranging a data frame...
+head(s)
+s <- select(d, Family, Genus, Body_mass_male_mean)  # selecting specific columns...
+head(s)
+s <- rename(d, Female_Mass = Body_mass_female_mean)
+head(s$Female_Mass)  # renaming columns...
+s <- mutate(d, Binomial = paste(Genus, Species, sep = " "))
+head(s$Binomial)  # and adding new columns...
+s <- select(d, Binomial)  # selecting specific columns...
+s <- select(d, binomial
+)
+s <- select(d,Family)
+head(s)
+s <- summarise(d, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
+na.rm = TRUE))
+s
+byFamily <- group_by(d, Family)
+byFamily
+s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
+na.rm = TRUE))
+s
+s <-                                                             #to create dataframe "s"
+d %>%                                                          #take dataframe "d"
+group_by(Family) %>%                                           #Group it by Family
+summarise(avgF = mean(Body_mass_female_mean, na.rm=TRUE),      #And calculate mean male BM
+avgM = mean(Body_mass_male_mean, na.rm=TRUE))        #And mean female BM
+s
+s <- d %>%
+mutate(Binomial = paste(Genus, Species, sep = " ")) %>%
+select(Binomial, Body_mass_female_mean, Body_mass_male_mean, Mass_Dimorphism) %>%
+group_by(Binomial) %>%
+summarise(avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
+na.rm = TRUE), avgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
+s
+mean(s$avgF)
+print(n=203)
+d[Chlorocebus pygerythrus]
+d["Chlorocebus pygerythrus"]
+d["Chlorocebus pygerythrus", avgF]
+d["Chlorocebus pygerythrus","avgF"]
+d["Chlorocebus pygerythrus","avgF", na.rm=TRUE]
+s
+print(s)
+print(s,n=203)
+summarize(d$Chlorocebus pygerythrus)
+summarize(d$Species)
+byspecies <- group_by(d, Species)
+byspecies
+byscientificname <- group_by(d, Scientific_Name)
+byscientificname
+s <- summarise(byscientificname, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
+na.rm = TRUE))
+s
+s <- summarise(, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
++                                                                                        na.rm = TRUE))
+print(d,n=203)
+s
+s <- d %>%
+mutate(Binomial = paste(Genus, Species, sep = " ")) %>%
+select(Binomial, Body_mass_female_mean, Body_mass_male_mean, Mass_Dimorphism) %>%
+group_by(Binomial) %>%
+summarise(avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
+na.rm = TRUE), avgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
+s
+print(s,n=203)
+s[70:72,]
+s[2,]
+s[71,]
+s[109,]
+s[71,,109,]
+s[71,],[109,]
+s[c(71,109),]
+#vervet monkeys are more sexually dimorphic
+#wolly monkeys have a larger average female body mass
+s <-                                                             #to create dataframe "s"
+d %>%                                                          #take dataframe "d"
+group_by(Family) %>%                                           #Group it by Family
+summarise(avgF = mean(Body_mass_female_mean, na.rm=TRUE),      #And calculate mean male BM
+avgM = mean(Body_mass_male_mean, na.rm=TRUE))        #And mean female BM
+s
+s <-                                                             #to create dataframe "s"
++     d %>%                                                          #take dataframe "d"
++     group_by(Family) %>%                                           #Group it by Family
++     summarise(avgF = mean(Body_mass_female_mean, na.rm=TRUE),      #And calculate mean male BM
++               avgM = mean(Body_mass_male_mean, na.rm=TRUE)),       BMavgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
+s <-                                                             "s"
+d %>%                                                          #take dataframe "d"
+group_by(Family) %>%                                           #Group it by Family
+summarise(avgF = mean(Body_mass_female_mean, na.rm=TRUE),      #And calculate mean male BM
+avgM = mean(Body_mass_male_mean, na.rm=TRUE))        #And mean female BM
+s
+s <-                                                             #to create dataframe "s"
+d %>%                                                          #take dataframe "d"
+group_by(Family) %>%                                           #Group it by Family
+summarise(avgF = mean(Body_mass_female_mean, na.rm=TRUE),      #And calculate mean male BM
+avgM = mean(Body_mass_male_mean, na.rm=TRUE))        #And mean female BM
+s
+s <-
+123
+s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,na.rm = TRUE),avgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
+s
+s[c(3,1)]
+s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,na.rm = TRUE),avgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
+s
+s[c(1,3),]
+p <- ggplot(data=s[c(1,3),], aes(x=Family, y=log(Body_mass_female_mean)))
+p <- p + geom_boxplot()
+p <- p + theme(axis.text.x = element_text(angle = 90))
+p <- p + ylab("log(Female Body Mass)")
+p
+p <- ggplot(data=s[c(1,3),], aes(x=Family, y=log(Body_mass_female_mean)))
+p
+library(ggplot2)
+p <- ggplot(data = d, aes(x = Family, y = log(Body_mass_female_mean)))  #define the variables
+p <- p + geom_boxplot()  #graph them in a boxplot
+p <- p + theme(axis.text.x = element_text(angle = 90))  #put x-axis names at 90deg
+p <- p + ylab("log(Female Body Mass)")  #rename y-axis title
+p  #show me the graph
+library(ggplot2)
+p <- ggplot(data = s[c(1,3),], aes(x = Family, y = log(Body_mass_female_mean)))  #define the variables
+p <- p + geom_boxplot()  #graph them in a boxplot
+p <- p + theme(axis.text.x = element_text(angle = 90))  #put x-axis names at 90deg
+p <- p + ylab("log(Female Body Mass)")  #rename y-axis title
+p  #show me the graph
+library(ggplot2)
+p <- ggplot(data = d, aes(x = Family, y = log(Body_mass_female_mean)))  #define the variables
+p <- p + geom_boxplot()  #graph them in a boxplot
+p <- p + theme(axis.text.x = element_text(angle = 90))  #put x-axis names at 90deg
+p <- p + ylab("log(Female Body Mass)")  #rename y-axis title
+p  #show me the graph
+s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,na.rm = TRUE),avgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
+> s
+s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,na.rm = TRUE),avgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
+s
+s[c(3,1)]
+y<-s[c(3,1)]
+y
+s[c(3,1),]
+y<-s[c(3,1),]
+library(ggplot2)
+p <- ggplot(data = y, aes(x = Family, y = log(Body_mass_female_mean)))  #define the variables
+p <- p + geom_boxplot()  #graph them in a boxplot
+p <- p + theme(axis.text.x = element_text(angle = 90))  #put x-axis names at 90deg
+p <- p + ylab("log(Female Body Mass)")  #rename y-axis title
+p  #show me the graph
+s <- s[order(s$Family),]
+s[c(1,3),]
+p <- ggplot(subset(data = s[c(1,3),]), aes(x = Family, y = log(Body_mass_female_mean)))  #define the variables
+
+I'm on the last challenge of Module 6. I can't figure out how to plot just two of the family names. 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
