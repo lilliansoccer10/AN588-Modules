@@ -8,7 +8,6 @@ date: "2023-09-19"
 ##Module 6 
 
 ```{r}
-
 install.packages("dplyr")
 install.packages("ggplot2")
 library(dplyr)
@@ -310,22 +309,43 @@ gm2(x)
 ##Challenge 2
 ```{r}
 ss1 <- function(x) {
-sum((x - mean(x))^2)
+sum((x - mean(x))^2) #squaring makes sure no values are not cancelled out when we add them together
 }
 ss1(x)
+```
+This is equivalent to ...
+
+```{r}
 ss2 <- function(x) {
 sum(x^2) - length(x) * mean(x)^2
 }
 ss2(x)
+```
+
+This may be a shortcut...
+
+```{r}
 ss3 <- function(x) {
 sum(x^2) - (sum(x))^2/length(x)
 }
 ss3(x)
+```
+
+Population Varience = sum of squares/N
+```{r}
 pop_v <- function(x) {
 sum((x - mean(x))^2)/(length(x))
 }
 pop_v(x)
 ```
+
+Sample variance = estimator of the population variance = sum of squares / (n - 1)
+
+In this formula, n - 1 is the number of degrees of freedom implied by the sample
+
+n=number in the sample
+
+"How many of those sample values can vary?"
 
 ##Challenge 3
 ```{r}
@@ -333,11 +353,22 @@ sample_v <- function(x) {
 sum((x - mean(x))^2)/(length(x) - 1)
 }
 sample_v(x)
+```
+
+```{r}
 var(sample_v(x))
 var(sample_v(x), na.rm=TRUE)
 sample_v
 var(x)
+```
+
+```{r}
 plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample size", ylab = "Variance")
+```
+
+for loops ... 
+
+```{r}
 for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
 for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
 for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
@@ -348,21 +379,16 @@ x <- rnorm(n, mean = 10, sd = 2)
 points(n, var(x))
 }
 }
-plot(c(0, 50), c(0, 15), type = "n", xlab = "Sample size", ylab = "Variance")
-for (n in seq(5, 50, 5)) # samples of 5, 10, 15... for (n in seq(5, 50,
-for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 5)) # samples of 5, 10,
-for (n in seq(5, 50, 5)) # samples of 5, 10, 15... 15...
-{
-for (i in 1:50) # 50 replicates for (i in 1:50) # 50 replicates
-{
-x <- rnorm(n, mean = 10, sd = 2)
-points(n, var(x))
-}
-}
+```
+
+```{r}
 pop_sd <- function(x) {
 sqrt(pop_v(x))
 }
 pop_sd(x)
+```
+
+```{r}
 sample_sd <- function(x) {
 sqrt(sample_v(x))
 }
@@ -376,9 +402,15 @@ SE1 <- function(x) {
 sqrt(sample_v(x)/length(x))
 }
 SE1(x)
+```
+
+```{r}
 var(x)
 var(x)/length(x)
 sqrt(var(x)/length(x))
+```
+
+```{r}
 library(sciplot)
 se(x)
 ```
@@ -388,11 +420,23 @@ se(x)
 set.seed(1)
 x <- rnorm(10000, 0, 1)
 hist(x)
+```
+
+```{R}
 x <- seq(from = -4, to = 4, by = 0.01)
 plot(x, dnorm(x), cex = 0.4)
+```
+
+```{r}
 plot(x, pnorm(x), cex = 0.4)
+```
+
+```{r}
 x <- seq(from = 0, to = 1, by = 0.01)
 plot(qnorm(x), x, cex = 0.4)
+```
+
+```{r}
 x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
 m <- mean(x)
 n <- length(x)
@@ -403,10 +447,20 @@ upper <- mean(x) + qnorm(0.975, mean = 0, sd = 1) * se(x)
 lower <- mean(x) + qnorm(0.025, mean = 0, sd = 1) * se(x)  # or lower <- mean(x) - qnorm(0.975)*se(x)
 ci <- c(lower, upper)
 ci
+```
+
+or alternatively...
+
+```{r}
 upper <- m + qnorm(0.975, mean = 0, sd = 1) * e
 lower <- m + qnorm(0.025, mean = 0, sd = 1) * e  # or lower <- m - qnorm(0.975)*e
 ci <- c(lower, upper)
 ci
+```
+
+Alternitevely...normal distribution...
+
+```{r}
 normalCI = function(x, CIlevel = 0.95) {
 upper = m + qnorm(1 - (1 - CIlevel)/2) * sqrt(var(x)/length(x))
 lower = m + qnorm((1 - CIlevel)/2) * sqrt(var(x)/length(x))
