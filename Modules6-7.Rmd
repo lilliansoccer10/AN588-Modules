@@ -246,36 +246,40 @@ s
 ###Bullet Point One
 ```{r}
 print(s,n=203)
+```
+
+```{r}
 s[70:72,]
 ```
 
+Can do %>% filter Binomial: name of binomial | Binomial name of binomial
+
 Comments:
- --- vervet monkeys are more sexually dimorphic
-----wolly monkeys have a larger average female body mass
+Vervet monkeys are more sexually dimorphic
+Wolly monkeys have a larger average female body mass
 
 ###Bullet Point 2
 
+--NEED TO FINISH THIS BULLET POINT
+
 ```{r}
-s <- d %>%
-mutate(Binomial = paste(Genus, Species, sep = " ")) %>%
-select(Binomial, Body_mass_female_mean, Body_mass_male_mean, Mass_Dimorphism) %>%
-group_by(Binomial) %>%
-summarise(avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
-na.rm = TRUE), avgBMD = mean(Mass_Dimorphism, na.rm = TRUE))
-s
+s %>% filter(Family == "Cercopithecidae" | Family == "Atelidae) %>% 
 ```
 
-print(s, n=203)
-s[c(71,109),]
+MAKE SEPERATE PLOTS OF FEMALE AVG, MALE AVG, BM --
 
-DID NOT FINISH SECOND PART
+
 
 ##Module 7 
 
-##Challenge 1
+
 ```{r}
 install.packages("sciplot")
 library(sciplot)
+```
+
+##Challenge 1
+```{r}
 x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 25, 50, 100, 200, 1000)
 gm1 <- function(x) {
 prod(x)^(1/length(x))
