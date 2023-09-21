@@ -13,8 +13,10 @@ install.packages("dplyr")
 install.packages("ggplot2")
 library(dplyr)
 library(ggplot2)
+```
 
 ##Challenge 1
+```{r}
 library(curl)
 f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/Country-Data-2016.csv")
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
@@ -123,22 +125,36 @@ p <- p + ylab("log(Female Body Mass)")  #rename y-axis title
 p  #show me the graph
 ```
 
+--factor levels are meaningful to R, individual data points that have the same variable can be organized based on the same variables--
+
 ##Challenge 6
 ```{r}
 attach(d)
 par(mfrow = c(1, 2))
 plot(x = Body_mass_female_mean, y = Brain_Size_Female_Mean)
 plot(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean))
+```
+
+```{r}
 detach(d)
+```
+
+```{r}
 p <- ggplot(data = d, aes(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean),
 color = factor(Family)))  # first, we build a plot object and color points by Family
 p <- p + xlab("log(Female Body Mass)") + ylab("log(Female Brain Size)")  # then we modify the axis labels
 p <- p + geom_point()  # then we make a scatterplot
 p <- p + theme(legend.position = "bottom", legend.title = element_blank())  # then we modify the legend
 p  # and, finally, we plot the object
+```
+
+```{r}
 p <- p + facet_wrap(~Family, ncol = 4)
 p <- p + theme(legend.position = "none")
 p
+```
+
+```{r}
 p <- p + geom_smooth(method = "lm", fullrange = TRUE)
 p
 ```
@@ -149,22 +165,56 @@ p <- ggplot(data = d, aes(x = log(Body_mass_female_mean), y = log(MaxLongevity_m
 p <- p + geom_point()
 p <- p + geom_smooth(method = "lm")
 p
+```
+
+
+###Aggregate Statistics and the dplyr package
+```{r}
 aggregate(d$Body_mass_female_mean ~ d$Family, FUN = "mean", na.rm = TRUE)
+```
+OR
+```{r}
 aggregate(x = d["Body_mass_female_mean"], by = d["Family"], FUN = "mean", na.rm = TRUE)
+```
+
+```{r}
 library(dplyr)
 s <- filter(d, Family == "Hominidae" & Mass_Dimorphism > 2)
 head(s)  # filtering a data frame for certain rows...
+s
+```
+
+```{r}
 s <- arrange(d, Family, Genus, Body_mass_male_mean)  # rearranging a data frame...
 head(s)
+s
+```
+
+```{r}
 s <- select(d, Family, Genus, Body_mass_male_mean)  # selecting specific columns...
 head(s)
+s
+```
+
+```{r}
 s <- rename(d, Female_Mass = Body_mass_female_mean)
 head(s$Female_Mass)  # renaming columns...
+s
+```
+
+```{r}
 s <- mutate(d, Binomial = paste(Genus, Species, sep = " "))
 head(s$Binomial)  # and adding new columns...
+s
+```
+
+```{r}
 s <- summarise(d, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
     na.rm = TRUE))
 s
+```
+
+```{r}
 byFamily <- group_by(d, Family)
 byFamily
 s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean,
