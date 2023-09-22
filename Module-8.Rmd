@@ -1,0 +1,28 @@
+---
+title: "Module 8"
+author: "Lillian Holden"
+date: "2023-09-22"
+output: html_document
+---
+
+```{r}
+outcomes <- c(1, 2, 3, 4, 5, 6)
+manipulate(hist(sample(outcomes, n, replace = TRUE), breaks = c(0.5, 1.5, 2.5,
+    3.5, 4.5, 5.5, 6.5), probability = TRUE, main = paste("Histogram of Outcomes of ",
+    n, " Die Rolls", sep = ""), xlab = "roll", ylab = "probability"), n = slider(0,
+    10000, initial = 100, step = 100))
+```
+
+##Challenge 1
+
+```{r}
+nrolls <- 1000
+roll <- function(x) {
+    sample(1:6, x, replace = TRUE)
+}
+two_dice <- roll(nrolls) + roll(nrolls)
+hist(two_dice, breaks = c(1.5:12.5), probability = TRUE, main = "Rolling Two Dice",
+    xlab = "sum of rolls", ylab = "probability")
+```
+
+##Challenge 2
