@@ -6,6 +6,11 @@ output: html_document
 ---
 
 ```{r}
+library(manipulate)
+```
+
+
+```{r}
 outcomes <- c(1, 2, 3, 4, 5, 6)
 manipulate(hist(sample(outcomes, n, replace = TRUE), breaks = c(0.5, 1.5, 2.5,
     3.5, 4.5, 5.5, 6.5), probability = TRUE, main = paste("Histogram of Outcomes of ",
@@ -26,3 +31,10 @@ hist(two_dice, breaks = c(1.5:12.5), probability = TRUE, main = "Rolling Two Dic
 ```
 
 ##Challenge 2
+
+> heart <- c("ace of hearts", "two of hearts", "three of hearts", "four of hearts", "five of hearts", "six of hearts", "seven of hearts", "eight of hearts", "nine of hearts", "ten of hearts", "jack of hearts", "queen of hearts", "king of hearts")
+> spade <- c("ace of spades", "two of spades", "three of spades", "four of spades", "five of spades", "six of spades", "seven of spades", "eight of spades", "nine of spades", "ten of spades", "jack of spades", "queen of spades", "king of spades")
+> clover <- c("ace of clovers", "two of clovers", "three of clovers", "four of clovers", "five of clovers", "six of clovers", "seven of clovers", "eight of clovers", "nine of clovers", "ten of clovers", "jack of clovers", "queen of clovers", "king of clovers")
+> diamond <- c("ace of diamonds", "two of diamonds", "three of diamonds", "four of diamonds", "five of diamonds", "six of diamonds", "seven of diamonds", "eight of diamonds", "nine of diamonds", "ten of diamonds", "jack of diamonds", "queen of diamonds", "king of diamonds")
+> cardstack <- c(spade,heart,clover,diamond)
+> print(cardstack)
