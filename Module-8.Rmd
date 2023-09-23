@@ -18,7 +18,7 @@ manipulate(hist(sample(outcomes, n, replace = TRUE), breaks = c(0.5, 1.5, 2.5,
     10000, initial = 100, step = 100))
 ```
 
-##Challenge 1
+## Challenge 1
 
 ```{r}
 nrolls <- 1000
@@ -30,11 +30,462 @@ hist(two_dice, breaks = c(1.5:12.5), probability = TRUE, main = "Rolling Two Dic
     xlab = "sum of rolls", ylab = "probability")
 ```
 
-##Challenge 2
+## Challenge 2
 
-> heart <- c("ace of hearts", "two of hearts", "three of hearts", "four of hearts", "five of hearts", "six of hearts", "seven of hearts", "eight of hearts", "nine of hearts", "ten of hearts", "jack of hearts", "queen of hearts", "king of hearts")
-> spade <- c("ace of spades", "two of spades", "three of spades", "four of spades", "five of spades", "six of spades", "seven of spades", "eight of spades", "nine of spades", "ten of spades", "jack of spades", "queen of spades", "king of spades")
-> clover <- c("ace of clovers", "two of clovers", "three of clovers", "four of clovers", "five of clovers", "six of clovers", "seven of clovers", "eight of clovers", "nine of clovers", "ten of clovers", "jack of clovers", "queen of clovers", "king of clovers")
-> diamond <- c("ace of diamonds", "two of diamonds", "three of diamonds", "four of diamonds", "five of diamonds", "six of diamonds", "seven of diamonds", "eight of diamonds", "nine of diamonds", "ten of diamonds", "jack of diamonds", "queen of diamonds", "king of diamonds")
-> cardstack <- c(spade,heart,clover,diamond)
-> print(cardstack)
+What is the probability that you draw a face card?
+-Pr(A) = 12/52
+
+What is the probability that you draw a King?
+-Pr(A) = 4/52
+
+What is the probability that you draw a spade?
+-Pr(A) = 13/52
+
+What is the probability that you draw a spade given that you draw a face card?
+-Pr(A) = 3/52
+
+What is the probability that you draw a King given that you draw a face card?
+-Pr(A) = 4/52
+
+What is the probability that you draw a card that is both from a red suit (hearts or diamonds) and a face card?
+-Pr (A) = red suit = 26/52 = 1/2
+Pr (B) = face card = 12/52 =
+Pr (A | B) = red suit given face card = 6/12
+Pr (A ⋂ B) = Pr (A | B) × Pr (B) = 6/12 × 12/52 = 6/52 = 0.1153846
+
+What is the probability that you draw a card that is either a club or not a face card?
+Pr (A) = club = 13/52 = 13/52
+Pr (B) = not a face card = 40/52
+Pr (A ⋂ B) = club and not a face card = 10/52
+Pr (A ⋃ B) = Pr (A) + Pr (B) - Pr (A ⋂ B) = 13/52 + 40/52 - 10/52 = 43/52
+
+## Flipping A Fair Coin
+
+```{r}
+outcomes <- c("heads", "tails")
+prob <- c(1/2, 1/2)
+barplot(prob, ylim = c(0, 0.6), names.arg = outcomes, space = 0.1, xlab = "outcome",
+    ylab = "Pr(X = outcome)", main = "Probability Mass Function")
+```
+
+```{r}
+cumprob <- cumsum(prob)
+barplot(cumprob, names.arg = outcomes, space = 0.1, xlab = "outcome", ylab = "Cumulative Pr(X)",
+    main = "Cumulative Probability")
+```
+## Rolling a Fair Die
+```{r}
+outcomes <- c(1, 2, 3, 4, 5, 6)
+prob <- c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6)
+barplot(prob, ylim = c(0, 0.5), names.arg = outcomes, space = 0.1, xlab = "outcome",
+    ylab = "Pr(X = outcome)", main = "Probability Mass Function")
+```    
+## An Example
+
+```{r}
+cumprob <- cumsum(prob)
+barplot(cumprob, names.arg = outcomes, space = 0.1, xlab = "outcome", ylab = "Cumulative Pr(X)",
+    main = "Cumulative Probability")
+```
+
+```{r}
+library(ggplot2)
+a <- 2
+b <- 1
+K <- 2
+x <- seq(from = 0, to = 1, by = 0.025)
+fx <- K * x^(a - 1) * (1 - x)^(b - 1)
+lower_x <- seq(from = -0.25, to = 0, by = 0.025)  # add some values of x less than zero
+upper_x <- seq(from = 1, to = 1.25, by = 0.025)  # add some values of x greater than one
+lower_fx <- rep(0, 11)  # add fx=0 values to x<0
+upper_fx <- rep(0, 11)  # add fx=0 values to x>1
+x <- c(lower_x, x, upper_x)  # paste xs together
+fx <- c(lower_fx, fx, upper_fx)  # paste fxs together
+d <- as.data.frame(cbind(x, fx))
+p <- ggplot(data = d, aes(x = x, y = fx)) + xlab("x") + ylab("f(x)") + geom_line()
+p
+```
+
+```{r}
+library(manipulate)
+manipulate(ggplot(data = d, aes(x = x, y = fx)) + xlab("x") + ylab("f(x)") +
+    geom_line() + geom_polygon(data = data.frame(xvals = c(0, n, n, 0), fxvals = c(0,
+    K * n^(a - 1) * (1 - n)^(b - 1), 0, 0)), aes(x = xvals, y = fxvals)) + ggtitle(paste("Area Under Function = ",
+    0.5 * n * K * n^(a - 1) * (1 - n)^(b - 1), sep = " ")), n = slider(0, 1,
+    initial = 0.5, step = 0.01))
+```
+```{r}
+pbeta(0.75, 2, 1)  # cumulative probability for x ≤ 0.75
+```
+```{r}
+x <- seq(from = 0, to = 1, by = 0.005)
+prob <- 0.5 * x * K * x^(a - 1) * (1 - x)^(b - 1)
+barplot(prob, names.arg = x, space = 0, main = "Cumulative Probability", xlab = "x",
+    ylab = "Pr(X ≤ x)")
+```
+
+```{r}
+pbeta(0.5, 2, 1)  # cumulative probability for x ≤ 0.50
+```
+
+```{r}
+pbeta(0.7, 2, 1)  # yields .49
+```
+
+```{r}
+qbeta(0.49, 2, 1)  # yield 0.7
+```
+
+## Expected Mean and Variance of Random Variables
+
+```{r}
+m <- sum(seq(1:6) * 1/6)
+m
+```
+
+```{r}
+var <- sum((seq(1:6) - mean(seq(1:6)))^2 * (1/6))
+var
+```
+### Challenge 3
+
+```{r}
+Prob <- (13/52)^1 * (39/52)^0
+Prob
+```
+
+```{r}
+Var <- (13/52)*(1-(13/52))
+Var
+```
+
+
+## Challenge 4
+
+```{r}
+n <- 6  # number of trials
+k <- 6  # number of successes
+p <- 1/6
+prob <- (factorial(n)/(factorial(k) * factorial(n - k))) * (p^k) * (1 - p)^(n -
+    k)
+prob
+```
+
+```{r}
+k <- 3  # number of successes
+prob <- (factorial(n)/(factorial(k) * factorial(n - k))) * (p^k) * (1 - p)^(n -
+    k)
+prob
+```
+
+```{r}
+dbinom(x = k, size = n, prob = p)
+```
+
+```{r}
+probset <- dbinom(x = 0:6, size = 6, prob = 1/6)  # x is number of successes, size is number of trials
+barplot(probset, names.arg = 0:6, space = 0, xlab = "outcome", ylab = "Pr(X = outcome)",
+    main = "Probability Mass Function")
+```
+
+```{r}
+cumprob = cumsum(probset)
+barplot(cumprob, names.arg = 0:6, space = 0.1, xlab = "outcome", ylab = "Cumulative Pr(X)",
+    main = "Cumulative Probability")
+```
+
+```{r}
+sum(probset)  # equals 1, as it should
+```
+
+```{r}
+dbinom(x = 3, size = 6, prob = 1/6)
+```
+
+```{r}
+pbinom(q = 3, size = 6, prob = 1/6)  # note the name of the argument is q not x
+```
+
+```{r}
+sum(dbinom(x = 0:3, size = 6, prob = 1/6))  # this sums the probabilities of 0, 1, 2, and 3 successes
+```
+
+```{r}
+1 - pnbinom(q = 3, size = 6, prob = 1/6)
+```
+
+```{r}
+pnbinom(q = 3, size = 6, prob = 1/6, lower.tail = FALSE)
+```
+
+```{r}
+1 - pbinom(q = 2, size = 6, prob = 1/6)  # note here that the q argument is '2'
+```
+
+```{r}
+pbinom(q = 2, size = 6, prob = 1/6, lower.tail = FALSE)
+```
+
+```{r}
+x <- 0:10
+l = 3.5
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+```
+
+```{r}
+x <- 0:20
+l = 10
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+```
+
+```{r}
+x <- 0:50
+l = 20
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+```
+
+```{r}
+x <- 0:10
+l <- 3.5
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
+
+```{r}
+x <- 0:20
+l <- 10
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
+
+```{r}
+x <- 0:50
+l <- 20
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
+
+DO HOMEWORK PROBLEM HERE
+
+## Challenge 5
+
+```{r}
+a <- 4
+b <- 8
+x <- seq(from = a - (b - a), to = b + (b - a), by = 0.01)
+fx <- dunif(x, min = a, max = b)  # dunif() evaluates the density at each x
+plot(x, fx, type = "l", xlab = "x", ylab = "f(x)", main = "Probability Density Function")
+```
+
+```{r}
+plot(x, punif(q = x, min = a, max = b), type = "l", xlab = "x", ylab = "Pr(X ≤ x)",
+    main = "Cumulative Probability")  # punif() is the cumulative probability density up to a given x
+```
+
+## Challenge 6
+
+```{r}
+mu <- 4
+sigma <- 1.5
+curve(dnorm(x, mu, sigma), mu - 4 * sigma, mu + 4 * sigma, main = "Normal Curve",
+    xlab = "x", ylab = "f(x)")
+```
+
+```{r}
+manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
+    dnorm(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
+        mean = mu, sd = sigma), type = "l", xlim = c(mu - 4 * sigma, mu + 4 *
+        sigma), xlab = "x", ylab = "f(x)", main = "Normal Probability Density Function") +
+    polygon(rbind(c(mu - nsigma * sigma, 0), cbind(seq(from = (mu - nsigma *
+        sigma), to = (mu + nsigma * sigma), length.out = 1000), dnorm(seq(from = (mu -
+        nsigma * sigma), to = (mu + nsigma * sigma), length.out = 1000), mean = mu,
+        sd = sigma)), c(mu + nsigma * sigma, 0)), border = NA, col = "salmon") +
+    abline(v = mu, col = "blue") + abline(h = 0) + abline(v = c(mu - nsigma *
+    sigma, mu + nsigma * sigma), col = "salmon"), mu = slider(-10, 10, initial = 0,
+    step = 0.25), sigma = slider(0.25, 4, initial = 1, step = 0.25), nsigma = slider(0,
+    4, initial = 0, step = 0.25))
+```
+
+```{r}
+manipulate(plot(seq(from = (mu - 6 * sigma), to = (mu + 6 * sigma), length.out = 1000),
+    pnorm(seq(from = (mu - 6 * sigma), to = (mu + 6 * sigma), length.out = 1000),
+        mean = mu, sd = sigma), type = "l", xlim = c(-20, 20), xlab = "x", ylab = "f(x)",
+    main = "Cumulative Probability"), mu = slider(-10, 10, initial = 0, step = 0.25),
+    sigma = slider(0.25, 10, initial = 1, step = 0.25))  # plots the cumulative distribution function
+```
+
+```{r}
+p <- pnorm(8, mean = 6, sd = 2) - pnorm(7, mean = 6, sd = 2)
+p
+```
+
+```{r}
+mu <- 0
+sigma <- 1
+p <- pnorm(mu + 2 * sigma, mean = mu, sd = sigma) - pnorm(mu - 2 * sigma, mean = mu,
+    sd = sigma)
+p
+```
+
+```{r}
+p <- pnorm(mu + 1 * sigma, mean = mu, sd = sigma) - pnorm(mu - 1 * sigma, mean = mu,
+    sd = sigma)
+p
+```
+
+```{r}
+manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
+    dnorm(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
+        mean = mu, sd = sigma), type = "l", xlim = c(mu - 4 * sigma, mu + 4 *
+        sigma), xlab = "x", ylab = "f(x)", main = "Normal Probability Density Function") +
+    abline(v = mu, col = "blue") + abline(h = 0) + polygon(x = c(qnorm((1 -
+    CI)/2, mean = mu, sd = sigma), qnorm((1 - CI)/2, mean = mu, sd = sigma),
+    qnorm(1 - (1 - CI)/2, mean = mu, sd = sigma), qnorm(1 - (1 - CI)/2, mean = mu,
+        sd = sigma)), y = c(0, 1, 1, 0), border = "red"), mu = slider(-10, 10,
+    initial = 0, step = 0.25), sigma = slider(0.25, 10, initial = 1, step = 0.25),
+    CI = slider(0.5, 0.99, initial = 0.9, step = 0.01))
+```
+
+## Challenge 7
+
+```{r}
+n <- 1000
+mu <- 3.5
+sigma <- 4
+v <- rnorm(n, mu, sigma)
+mean(v)
+```
+
+```{r}
+var(v)
+```
+
+```{r}
+sd(v)
+```
+
+```{r}
+hist(v, breaks = seq(from = -15, to = 20, by = 0.5), probability = TRUE)
+```
+
+```{r}
+qqnorm(v, main = "Normal QQ plot random normal variables")
+qqline(v, col = "gray")
+```
+
+```{r}
+p <- ppoints(length(v))
+head(p)
+```
+
+```{r}
+tail(p)
+```
+
+```{r}
+theoretical_q <- qnorm(ppoints(length(v)))
+```
+
+```{r}
+observed_q <- quantile(v, ppoints(v))
+```
+
+```{r}
+plot(theoretical_q, observed_q, main = "Normal QQ plot random normal variables",
+    xlab = "Theoretical Quantiles", ylab = "Sample Quantiles")
+```
+
+## Challenge 8 
+
+```{r}
+x <- rnorm(10000, mean = 5, sd = 8)  # simulate from a normal distribution with mean 5 and SD 8
+hist(x)
+```
+
+```{r}
+mean(x)
+```
+
+```{r}
+sd(x)
+```
+
+```{r}
+z <- (x - mean(x))/sd(x)  # standardized!
+hist(z)
+```
+
+```{r}
+mean(z)
+```
+
+```{r}
+sd(z)
+```
+
+```{r}
+set.seed(1)
+x <- rnorm(1e+06, 25, 5)
+hist(x, probability = TRUE)
+```
+
+```{r}
+mu <- mean(x)
+mu
+```
+
+```{r}
+sigma <- sqrt(sum((x - mean(x))^2)/length(x))
+```
+
+```{r}
+k <- 1000  # number of samples
+n <- 5  # size of each sample
+s <- NULL  # dummy variable to hold each sample
+for (i in 1:k) {
+    s[[i]] <- sample(x, size = n, replace = FALSE)
+}
+head(s)
+```
+
+```{r}
+m <- NULL
+for (i in 1:k) {
+    m[i] <- mean(s[[i]])
+}
+mean(m)  # almost equal to...
+```
+
+```{r}
+mu
+```
+
+```{r}
+pop_se <- sqrt(sigma^2/n)
+pop_se  # SE estimated from population standard deviation
+```
+
+```{r}
+pop_se <- sigma/sqrt(n)
+pop_se  # SE estimated from population standard deviation
+```
+
+```{r}
+stdev <- NULL
+for (i in 1:k) {
+    stdev[i] <- sd(s[[i]])
+}
+sem <- stdev/sqrt(n)  # a vector of SEs estimated from each sample 
+head(sem)
+```
+
+```{r}
+mean(sem)  # which is almost equal to...
+```
+
+```{r}
+pop_se
+```
