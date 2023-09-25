@@ -78,9 +78,9 @@ barplot(d$area)
 par(mfrow = c(1, 2))  # gives us two panels
 attach(d)
 hist(log(population), freq = FALSE, col = "red", main = "Plot 1", xlab = "log(population size)",
-ylab = "density", ylim = c(0, 0.2))
+    ylab = "density", ylim = c(0, 0.2))
 hist(log(area), freq = FALSE, col = "red", main = "Plot 2", xlab = "log(area)",
-ylab = "density", ylim = c(0, 0.2))
+    ylab = "density", ylim = c(0, 0.2))
 ```
 
 ```{r}
@@ -260,8 +260,8 @@ Wolly monkeys have a larger average female body mass
 ###Bullet Point 2
 
 ```{r}
-d %>% filter(Family == "Atelidae" | Family == "Cercopithecidae")
-d
+d %>% filter(Family == "Cercopithecidae" | Family == "Atelidae") %>% 
+b <- ggplot(d, aes(x=Body_mass_female_mean, y=Family))
 ```
 
 ##Module 7 
