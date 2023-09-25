@@ -2,7 +2,7 @@
 title: "Module 8"
 author: "Lillian Holden"
 date: "2023-09-22"
-output: html_document
+output: html_document 
 ---
 
 ```{r}
