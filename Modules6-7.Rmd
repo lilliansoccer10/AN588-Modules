@@ -260,8 +260,9 @@ Wolly monkeys have a larger average female body mass
 ###Bullet Point 2
 
 ```{r}
-d %>% filter(Family == "Cercopithecidae" | Family == "Atelidae") %>% 
-b <- ggplot(d, aes(x=Body_mass_female_mean, y=Family))
+s <- filter(d, Family == "Cercopithecidae" | Family == "Atelidae")
+ggplot(s, aes(x=Family, y=Body_mass_female_mean, fill=Family))
+s
 ```
 
 ##Module 7 
