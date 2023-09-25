@@ -261,11 +261,32 @@ Wolly monkeys have a larger average female body mass
 
 ```{r}
 s <- filter(d, Family == "Cercopithecidae" | Family == "Atelidae")
-ggplot(s, aes(x=Family, y=Body_mass_female_mean, fill=Family))
+s <-ggplot(data=s, aes(x=Family, Body_mass_female_mean, fill=Family))
+s <-s+geom_boxplot()
+s <- s + scale_fill_manual(values=c("purple", "green"))
+s <- s + ggtitle("Boxplot of Average Female Body Mass by Family")
 s
 ```
 
-##Module 7 
+```{r}
+s <- filter(d, Family == "Cercopithecidae" | Family == "Atelidae")
+s <-ggplot(data=s, aes(x=Family, Body_mass_male_mean, fill=Family))
+s <-s+geom_boxplot()
+s <- s + scale_fill_manual(values=c("purple", "green"))
+s <- s + ggtitle("Boxplot of Average Male Body Mass by Family")
+s
+```
+```{r}
+s <- filter(d, Family == "Cercopithecidae" | Family == "Atelidae")
+s <-ggplot(data=s, aes(x=Family, Mass_Dimorphism, fill=Family))
+s <-s+geom_boxplot()
+s <- s + scale_fill_manual(values=c("purple", "green"))
+s <- s + ggtitle("Boxplot of Average Mass Dimorphism by Family")
+s
+```
+
+
+## Module 7 
 
 
 ```{r}
