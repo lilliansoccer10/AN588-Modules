@@ -34,18 +34,37 @@ hist(two_dice, breaks = c(1.5:12.5), probability = TRUE, main = "Rolling Two Dic
 
 What is the probability that you draw a face card?
 -Pr(A) = 12/52
+```{r}
+12/52
+```
 
 What is the probability that you draw a King?
 -Pr(A) = 4/52
+```{r}
+4/52
+```
 
 What is the probability that you draw a spade?
 -Pr(A) = 13/52
+```{r}
+13/52
+```
 
 What is the probability that you draw a spade given that you draw a face card?
--Pr(A) = 3/52
+-Pr (A) = face card = 12/52 
+-Pr(A|B) = spade given face card = 3/12
+-Pr (A ⋂ B) = Pr (A | B) × Pr (B) = 3/12 × 12/52 = 3/52
+```{r}
+3/52
+```
 
 What is the probability that you draw a King given that you draw a face card?
--Pr(A) = 4/52
+Pr (A) = face card = 12/52 
+-Pr(A|B) = King given face card = 4/12
+-Pr (A ⋂ B) = Pr (A | B) × Pr (B) = 4/12 × 12/52 = 1/13
+```{r}
+1/13
+```
 
 What is the probability that you draw a card that is both from a red suit (hearts or diamonds) and a face card?
 -Pr (A) = red suit = 26/52 = 1/2
