@@ -1,0 +1,22 @@
+---
+title: "Homework 2"
+author: "Lillian Holden"
+date: "2023-09-25"
+output: html_document 
+---
+
+```{r}
+library(manipulate)
+```
+Poisson Formula
+f(x) =(e– λ λx)/x!
+
+
+
+```{r}
+x <- 0:30
+l = 15
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+```
+
