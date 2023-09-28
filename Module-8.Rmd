@@ -3,6 +3,8 @@ title: "Module 8"
 author: "Lillian Holden"
 date: "2023-09-22"
 output: html_document 
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r}
