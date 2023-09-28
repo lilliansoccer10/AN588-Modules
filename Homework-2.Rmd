@@ -10,12 +10,13 @@ library(manipulate)
 ```
 ### Poisson Formula
 f(x) =(e– λ λx)/x!
-0! <- 
-e <- 2.718
+
 
 What is the probability that she will hear more than 8 calls during any given session?
 
-
+```{r}
+ppois(8,15,lower.tail = FALSE)
+```
 
 What is the probability that she will hear no calls in a session?
 
@@ -25,6 +26,12 @@ P(X=0) = (15^0 e^-15)/0!
 15^0*e^-15
 e^-15/1
 3.063784*e^-07
+```
+
+OR
+
+```{r}
+dpois(0,15)
 ```
 
 What is the probability that she will hear exactly 3 calls in a session?
@@ -38,6 +45,11 @@ P(X=3) = (15^3 e^-15)/3!
 0.001034027/6
 ```
 
+OR
+
+```{r}
+dpois(3,15)
+```
 
 ## Plot the relevant Poisson mass function over the values in range 0 ≤ x ≤ 30.
 ```{r}
@@ -48,4 +60,16 @@ barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main 
 ```
 
 Simulate 104 results from this distribution (i.e., 2 years of Saturday monitoring sessions).
-Plot the simulated results using hist() and use xlim() to set the horizontal limits to be from 0 to 30. How does your histogram compare to the shape of the probability mass function you plotted above?
+
+```{r}
+y <- rpois(104,15)
+y
+```
+
+## Plot the simulated results using hist() and use xlim() to set the horizontal limits to be from 0 to 30. 
+
+```{r}
+
+```
+
+How does your histogram compare to the shape of the probability mass function you plotted above?
