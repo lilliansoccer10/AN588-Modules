@@ -1,14 +1,29 @@
 ---
-title: "Homework 2"
+title: "Homework 2" 
 author: "By: Lillian Holden"
 subtitle: "Titis in the Mist"
 date: "September 27th, 2023"
 output: 
   prettydoc::html_pretty:
     theme: cayman
+    highlight: github
     toc: yes
   
 ---
+
+```{r titimonkey, echo=FALSE, fig.align='center', fig.cap='Beautiful Titi Monkeys!', out.width='50%'}
+knitr::include_graphics('~/Documents/GitHub/AN588-Modules/logo.jpeg')
+```
+
+# Challenges 
+1.
+2.
+3.
+4.
+5.
+
+
+
 Use the following packages: 
 ```{r}
 library(manipulate)
