@@ -6,6 +6,10 @@ output: html_document
 ---
 
 ```{r}
+library(curl)
+```
+
+```{r}
 n <- 1000
 mu <- 3.5
 sigma <- 4
