@@ -4,6 +4,7 @@ author: "Lillian Holden"
 date: "2023-09-30"
 output: html_document
 ---
+# Module 9: Introduction to Statistical Inference 
 
 ```{r}
 library(curl)
@@ -29,3 +30,414 @@ upper <- m + qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower 
 ci <- c(lower, upper)
 ci
 ```
+
+## The Central Limit Theorem
+
+```{r}
+lambda <- 14
+n <- 10
+pop_se <- sqrt(lambda/n)  # the estimated SE
+pop_se
+```
+```{r}
+x <- NULL
+for (i in 1:1000) {
+    x[i] <- mean(rpois(n = n, lambda = lambda))
+}
+hist(x, breaks = seq(from = lambda - 4 * sqrt(lambda)/sqrt(n), to = lambda +
+    4 * sqrt(lambda)/sqrt(n), length.out = 20), probability = TRUE)
+```
+```{r}
+sd <- sd(x)  # st dev of the sampling distribution
+sd
+```
+```{r}
+qqnorm(x)
+qqline(x)
+```
+```{r}
+n <- 100
+pop_se <- sqrt(lambda/n)  # the estimated SE
+pop_se
+```
+```{r}
+x <- NULL
+for (i in 1:1000) {
+    x[i] <- mean(rpois(n = n, lambda = lambda))
+}
+hist(x, breaks = seq(from = lambda - 4 * sqrt(lambda)/sqrt(n), to = lambda +
+    4 * sqrt(lambda)/sqrt(n), length.out = 20), probability = TRUE)
+```
+```{r}
+sd <- sd(x)  # st dev of the sampling distribution
+sd
+```
+
+```{r}
+qqnorm(x)
+qqline(x)
+```
+
+```{r}
+curve(dnorm(x, 0, 1), -4, 4, ylim = c(0, 0.8))
+z <- (x - lambda)/pop_se
+hist(z, breaks = seq(from = -4, to = 4, length.out = 20), probability = TRUE,
+    add = TRUE)
+```
+
+```{r}
+n <- 100
+x <- NULL
+for (i in 1:1000) {
+    x[i] <- sum(rpois(n = n, lambda = lambda))
+}
+hist(x, breaks = seq(min(x), max(x), length.out = 20), probability = TRUE)
+```
+
+## Confidence Intervals for Sample Proportions
+
+### Challenge
+
+```{r}
+n <- 1000
+x <- 856
+phat <- x/n  # our estimate of pi
+phat
+```
+```{r}
+n * phat
+n * (1 - phat)
+pop_se <- sqrt((phat) * (1 - phat)/n)
+```
+```{r}
+curve(dnorm(x, mean = phat, sd = pop_se), phat - 4 * pop_se, phat + 4 * pop_se)
+upper <- phat + qnorm(0.975) * pop_se
+lower <- phat - qnorm(0.975) * pop_se
+ci <- c(lower, upper)
+polygon(cbind(c(ci[1], seq(from = ci[1], to = ci[2], length.out = 1000), ci[2]),
+    c(0, dnorm(seq(from = ci[1], to = ci[2], length.out = 1000), mean = phat,
+        sd = pop_se), 0)), border = "black", col = "gray")
+abline(v = ci)
+abline(h = 0)
+```
+### Small Sample Confidence Intervals
+
+```{r}
+mu <- 0
+sigma <- 1
+curve(dnorm(x, mu, 1), mu - 4 * sigma, mu + 4 * sigma, main = "Normal Curve=red\nStudent's t=blue",
+    xlab = "x", ylab = "f(x)", col = "red", lwd = 3)
+for (i in c(1, 2, 3, 4, 5, 10, 20, 100)) {
+    curve(dt(x, df = i), mu - 4 * sigma, mu + 4 * sigma, main = "T Curve", xlab = "x",
+        ylab = "f(x)", add = TRUE, col = "blue", lty = 5)
+}
+```
+```{r}
+n <- 1e+05
+mu <- 3.5
+sigma <- 4
+x <- rnorm(n, mu, sigma)
+sample_size <- 30
+s <- sample(x, size = sample_size, replace = FALSE)
+m <- mean(s)
+m
+```
+```{r}
+sd <- sd(s)
+sd
+sem <- sd(s)/sqrt(length(s))
+sem
+lower <- m - qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci_norm <- c(lower, upper)
+ci_norm
+```
+
+```{r}
+lower <- m - qt(1 - 0.05/2, df = sample_size - 1) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qt(1 - 0.05/2, df = sample_size - 1) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci_t <- c(lower, upper)
+ci_t
+```
+
+```{r}
+sample_size <- 5
+s <- sample(x, size = sample_size, replace = FALSE)
+m <- mean(s)
+m
+```
+
+```{r}
+sd <- sd(s)
+sd
+sem <- sd(s)/sqrt(length(s))
+sem
+```
+
+```{r}
+lower <- m - qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci_norm <- c(lower, upper)
+ci_norm
+```
+
+```{r}
+lower <- m - qt(1 - 0.05/2, df = sample_size - 1) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qt(1 - 0.05/2, df = sample_size - 1) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci_t <- c(lower, upper)
+ci_t
+```
+
+### Summary of Challenge
+For larger sample sizes, the CIs are similar for normal distributions vs T distribribution. For smaller sample sizes, there is a larger difference in the CIs. 
+
+
+# Module 10: Classical Hypothesis Testing
+
+## Null and Alternative Hypotheses
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/vervet-weights.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+```{r}
+mean(d$weight)
+```
+```{r}
+mu <- 4.9
+x <- d$weight
+m <- mean(x)
+s <- sd(x)
+n <- length(x)
+sem <- s/sqrt(n)
+```
+
+```{r}
+z <- (m - mu)/sem
+z
+```
+
+### Normal Distribution 
+```{r}
+p <- 1 - pnorm(z)
+p
+```
+```{r}
+p <- pnorm(z, lower.tail = FALSE)
+p
+```
+
+### T Distribution
+
+```{r}
+p <- 1 - pt(z, df = n - 1)
+p
+```
+
+```{r}
+p <- pt(z, df = n - 1, lower.tail = FALSE)
+p
+```
+
+### t.test can be used to find the CIs more easily
+
+```{r}
+t <- t.test(x = x, mu = mu, alternative = "greater")
+t
+```
+
+
+### By Hand
+
+```{r}
+lower <- m - qt(1 - 0.05/2, df = n - 1) * sem
+upper <- m + qt(1 - 0.05/2, df = n - 1) * sem
+ci <- c(lower, upper)
+ci  # by hand
+```
+
+```{r}
+t <- t.test(x = x, mu = mu, alternative = "two.sided")
+ci <- t$conf.int
+ci  # using t test
+```
+
+
+## Challenge 1
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/woolly-weights.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+```{r}
+x <- d$weight
+m <- mean(x)
+s <- sd(x)
+n <- length(x)
+sem <- s/sqrt(n)
+mu <- 7.2
+t <- (m - mu)/sem
+t
+```
+
+```{r}
+alpha <- 0.05
+crit <- qt(1 - alpha/2, df = n - 1)  # identify critical values
+test <- t < -crit || t > crit  # boolean test as to whether t is larger than the critical value at either tail
+test <- abs(t) > crit
+t.test(x = x, mu = mu, alternative = "two.sided")
+```
+Based on the conclusions of the vervet sample, this comparison to the woolly monkey population means that the population of vervet monkeys were smaller by ~ 1.103411 kilograms average and that the 95% CI of the wholly population is much wider than that of the vervet's 95% CI.   
+
+### Mean Difference
+```{r}
+6.427333-5.323922 
+```
+
+95% CI of the vervet monkey population
+```{r}
+5.049585-5.598258
+```
+
+95% CI of the woolly monkey population
+```{r}
+5.930689-6.923978
+```
+
+## Challenge 2
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/colobus-weights.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+```{r}
+x <- d$weight[d$sex == "male"]
+y <- d$weight[d$sex == "female"]
+par(mfrow = c(1, 2))
+boxplot(x, ylim = c(4.5, 8), main = "Weight (kg)", xlab = "Males")
+boxplot(y, ylim = c(4.5, 8), main = "Weight (kg)", xlab = "Females")
+```
+```{r}
+m1 <- mean(x)
+m2 <- mean(y)
+mu <- 0  # you could leave this out... the default argument value is 0
+s1 <- sd(x)
+s2 <- sd(y)
+n1 <- length(x)
+n2 <- length(y)
+```
+
+```{r}
+m1
+m2
+s1 
+s2 
+n1
+n2
+```
+```{r}
+t <- (m2 - m1 - mu)/sqrt(s2^2/n2 + s1^2/n1)
+t
+```
+
+```{r}
+alpha <- 0.05
+crit <- qt(1 - alpha/2, df = n - 1)  # identify critical values
+crit
+```
+
+```{r}
+test <- t < -crit || t > crit  # boolean test
+test <- abs(t) > crit
+test
+```
+
+### Degrees of Freedom
+
+```{r}
+df <- (s2^2/n2 + s1^2/n1)^2/((s2^2/n2)^2/(n2 - 1) + (s1^2/n1)^2/(n1 - 1))
+df
+```
+
+### T-Test Function to Find the Degrees of Freedom
+
+```{r}
+t <- t.test(x = x, y = y, mu = 0, alternative = "two.sided")
+t
+```
+
+The degrees of freedom is 31.217. The true difference in the means are not equal to 0 meaning that the means of samples x and y are not equal. This is correct seeming how the mean of x is 6.689 and the mean of y is 5.24. The 95% CI of the hypothesis is 1.191186 1.706814. 
+
+### Samples with Equal Variences
+
+```{r}
+s <- sqrt((((n1 - 1) * s1^2) + ((n2 - 1) * s2^2))/(n1 + n2 - 2))
+t <- (m2 - m1 - mu)/(sqrt(s^2 * (1/n1 + 1/n2)))
+t
+```
+```{r}
+df <- n1 + n2 - 2
+df
+```
+
+```{r}
+t <- t.test(x = x, y = y, mu = 0, var.equal = TRUE, alternative = "two.sided")
+t
+```
+```{r}
+var(x)/var(y)
+```
+
+```{r}
+vt <- var.test(x, y)
+vt
+```
+### Paired Samples
+
+## Challenge 3
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/iqs.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+```{r}
+x <- d$IQ.before - d$IQ.after
+m <- mean(x)
+mu <- 0  # can leave this out
+s <- sd(x)
+n <- length(x)
+sem <- s/sqrt(n)
+par(mfrow = c(1, 2))
+boxplot(d$IQ.before, ylim = c(115, 145), main = "IQ", xlab = "Before")
+boxplot(d$IQ.after, ylim = c(115, 145), main = "IQ", xlab = "After")
+```
+
+
+```{r}
+t <- (m - mu)/sem
+t
+```
+
+```{r}
+alpha <- 0.05
+crit <- qt(1 - alpha/2, df = n - 1)  # identify critical values
+crit
+```
+
+```{r}
+test <- t < -crit || t > crit  # boolean test
+test
+```
+
+```{r}
+t.test(x, df = n - 1, alternative = "two.sided")
+```
+HOW DO WE INTERPRET THESE REULTS???
+
+
