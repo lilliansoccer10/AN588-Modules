@@ -189,7 +189,7 @@ ci_t
 ```
 
 ### Summary of Challenge
-For larger sample sizes, the CIs are similar for normal distributions vs T distribribution. For smaller sample sizes, there is a larger difference in the CIs. 
+For larger sample sizes, the CIs are similar for normal distributions vs T distributions. For smaller sample sizes, there is a larger difference in the CIs. 
 
 
 # Module 10: Classical Hypothesis Testing
@@ -204,6 +204,11 @@ head(d)
 ```{r}
 mean(d$weight)
 ```
+
+-The null distribution is that the mean is 4.9 kg. 
+-The alternative distribution is that the mean is 5.324 kg. 
+-It is an upper one tailed test. 
+
 ```{r}
 mu <- 4.9
 x <- d$weight
@@ -214,17 +219,28 @@ sem <- s/sqrt(n)
 ```
 
 ```{r}
+m
+s
+n
+```
+
+```{r}
 z <- (m - mu)/sem
 z
 ```
+#the estimated number of standard errors of the mean away from the population mean that our sample falls.
+
 
 ### Normal Distribution 
 ```{r}
 p <- 1 - pnorm(z)
 p
 ```
+
+or we can write it as
+
 ```{r}
-p <- pnorm(z, lower.tail = FALSE)
+p <- pnorm(z, lower.tail = FALSE) #only looking at the upper tail
 p
 ```
 
@@ -240,13 +256,15 @@ p <- pt(z, df = n - 1, lower.tail = FALSE)
 p
 ```
 
+R has built into it a single function, t.test(), that lets us do all this in one line. We give it our data and the expected population mean, μ, along with the kind of test we want to do.
+
 ### t.test can be used to find the CIs more easily
 
 ```{r}
 t <- t.test(x = x, mu = mu, alternative = "greater")
 t
 ```
-
+df is degrees of freedom n-1, so length of 51-1 is 50.
 
 ### By Hand
 
@@ -284,13 +302,20 @@ t
 ```
 
 ```{r}
+m
+s
+n
+```
+
+```{r}
 alpha <- 0.05
 crit <- qt(1 - alpha/2, df = n - 1)  # identify critical values
 test <- t < -crit || t > crit  # boolean test as to whether t is larger than the critical value at either tail
 test <- abs(t) > crit
 t.test(x = x, mu = mu, alternative = "two.sided")
 ```
-Based on the conclusions of the vervet sample, this comparison to the woolly monkey population means that the population of vervet monkeys were smaller by ~ 1.103411 kilograms average and that the 95% CI of the wholly population is much wider than that of the vervet's 95% CI.   
+The averages of the lowland woolly monkeys matches, so we can confirm that the different woolly monkeys is a different species because the mean was different.  
+ 
 
 ### Mean Difference
 ```{r}
@@ -371,7 +396,7 @@ t <- t.test(x = x, y = y, mu = 0, alternative = "two.sided")
 t
 ```
 
-The degrees of freedom is 31.217. The true difference in the means are not equal to 0 meaning that the means of samples x and y are not equal. This is correct seeming how the mean of x is 6.689 and the mean of y is 5.24. The 95% CI of the hypothesis is 1.191186 1.706814. 
+It is correct to assume that the males weigh more than the females on average seeming how the mean of x is 6.689 and the mean of y is 5.24.  
 
 ### Samples with Equal Variences
 
@@ -397,7 +422,9 @@ var(x)/var(y)
 vt <- var.test(x, y)
 vt
 ```
-### Paired Samples
+### Paired Samples (the data is not dependent - weights are different now vs future... need to take into account that chnages that one of us has is dependent on ourselves not others)
+
+mu = expected difference between the paired samples, which here it will be 0
 
 ## Challenge 3
 
@@ -423,6 +450,7 @@ boxplot(d$IQ.after, ylim = c(115, 145), main = "IQ", xlab = "After")
 t <- (m - mu)/sem
 t
 ```
+sample mean - mu / standard error of mean
 
 ```{r}
 alpha <- 0.05
@@ -435,10 +463,12 @@ test <- t < -crit || t > crit  # boolean test
 test
 ```
 
+The difference is not equal to zero. It is not significant though because it is equal to 0.08. 
+
 ```{r}
 t.test(x, df = n - 1, alternative = "two.sided")
 ```
-****************HOW DO WE INTERPRET THESE REULTS???
+
 
 ### Testing Sample Proportions: One Sample Z Test
 
@@ -488,12 +518,21 @@ s
 pop_se <- sqrt(pi * (1 - pi)/n)
 pop_se  # the se is an estimate of the sd of the sampling distribution
 ```
+
+This normal approximation is true as long as n is fairly large and π is not close to 0 or 1. One rule of thumb is to check that both n×π and n×(1−π) are greater than 5.
+
+
 ## Challenge 4
 
 ```{r}
 v <- c(0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0,
     1, 1, 0, 1, 0, 1, 1)
 ```
+
+
+-The null hypothesis is that there should be 80% success in the nets. 
+- The alternative hypothesis is that the rate may be significantly less than 80%.
+
 
 ```{r}
 phat <- mean(v)
@@ -524,7 +563,7 @@ pt <- prop.test(x = sum(v), n = length(v), p = 0.8, conf.level = 0.95, correct =
     alternative = "less")
 pt
 ```
-Yes, she was right that her success rate was lower than 80%. The success rate seems to be define by p multiplied by 100. P is the mean value. Her success rate is at a 95% CI is between 0.0000000 and 0.7328738 or 0%-73%. An estimation of what percentage she would get is 0.6 or 60%. The mean of her data is 0.6 or 60% birds caught out of 100% and 40% of birds not caught. 
+Yes, she was right that her success rate was significantly lower than previous years. The test statistic falls out of the bounds of the CIs. 
 
 ## Challenge 5 
 
@@ -534,6 +573,10 @@ v1 <- c(1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0,
 v2 <- c(1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0,
     0, 1, 1, 0, 1, 1, 1)
 ```
+
+-The null is that the two species do not differ in their proportions of lactating females.
+-The alternative hypothesis is that they do differ in some way. 
+
 
 ```{r}
 pstar <- (sum(v1) + sum(v2))/(length(v1) + length(v2))
@@ -577,7 +620,7 @@ pt
 
 What are her results? Are the proportions of lactating females different across species during this trapping season?
 
-Yes, the proportions of lactating females are different accross species this trapping seaon. The proportions are species one (0.70) vs species two (0.56) at a 95% CI. 
+The proportions are different, but the proportions are not significantly different according to the boolean test. The p-value falls within the CI, which is a good sign that the difference is not significant. 
 
 
 
