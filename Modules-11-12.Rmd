@@ -17,6 +17,9 @@ library(ggplot2)
 library(manipulate)
 ```
 
+
+## Type I Error 
+
 ```{r}
 typeI <- function(mu0, sigma, n, alternative = "two.tailed", alpha = 0.05, k = 10000) {
 }
@@ -120,3 +123,599 @@ sig <- pvals <= alpha/length(pvals)
 sig  # first 3 values are less than the adjusted alpha
 ```
 True means there is significance where false means that there is no significance. 
+
+```{r}
+sig <- p.adjust(pvals, method = "bonferroni") <= 0.05
+sig  # first 3 adjusted p values are less alpha
+```
+
+```{r}
+sig <- p.adjust(pvals, method = "BH") <= 0.05
+sig  # first 4 adjusted p values are less alpha
+```
+
+## Type II Error
+
+```{r}
+typeII <- function(mu0, muA, sigma, n, alternative = "two.tailed", alpha = 0.05,
+    k = 1000) {
+    p <- rep(NA, k)  # sets up a vector of empty p values
+    for (i in 1:k) {
+        x <- rnorm(n = n, mean = muA, sd = sigma)  # draw from Ha
+        m <- mean(x)
+        s <- sd(x)
+        z <- (m - mu0)/(s/sqrt(n))  # calculates the Z statistic for the sample drawn from Ha relative to the null distribution
+        if (alternative == "less") {
+            p[i] <- pnorm(z, lower.tail = TRUE)  # calculates the associated p value
+            hyp <- "muA < mu0"
+        }
+        if (alternative == "greater") {
+            p[i] <- pnorm(z, lower.tail = FALSE)
+            hyp <- "muA > mu0"
+        }
+        if (alternative == "two.tailed") {
+            if (z > 0) {
+                p[i] <- 2 * pnorm(z, lower.tail = FALSE)
+            }
+            if (z < 0) {
+                p[i] <- 2 * pnorm(z, lower.tail = TRUE)
+            }
+            hyp <- "muA ≠ mu0"
+        }
+    }
+
+    curve(dnorm(x, mu0, sigma/sqrt(n)), mu0 - 4 * sigma/sqrt(n), mu0 + 4 * sigma/sqrt(n),
+        main = paste("Sampling Distributions Under the Null (red)\nand Alternative Hypotheses (blue)\nType II error rate from simulation = ",
+            length(p[p >= alpha])/k, sep = ""), xlab = "x", ylab = "Pr(x)",
+        col = "red", xlim = c(min(c(mu0 - 4 * sigma/sqrt(n), muA - 4 * sigma/sqrt(n))),
+            max(c(mu0 + 4 * sigma/sqrt(n), muA + 4 * sigma/sqrt(n)))), ylim = c(0,
+            max(c(dnorm(mu0, mu0, sigma/sqrt(n))), dnorm(muA, muA, sigma/sqrt(n)))))
+
+    curve(dnorm(x, muA, sigma/sqrt(n)), muA - 4 * sigma/sqrt(n), muA + 4 * sigma/sqrt(n),
+        col = "blue", add = TRUE)
+    abline(h = 0)
+
+    if (alternative == "less") {
+        polygon(cbind(c(mu0 - qnorm(1 - alpha) * sigma/sqrt(n), seq(from = mu0 -
+            qnorm(1 - alpha) * sigma/sqrt(n), to = muA + 4 * sigma/sqrt(n),
+            length.out = 100), muA + 4 * sigma/sqrt(n))), c(0, dnorm(seq(mu0 -
+            qnorm(1 - alpha) * sigma/sqrt(n), to = muA + 4 * sigma/sqrt(n),
+            length.out = 100), mean = muA, sd = sigma/sqrt(n)), 0), border = "black",
+            col = "grey")
+        abline(v = mu0 - qnorm(1 - alpha) * sigma/sqrt(n), col = "black", lty = 3,
+            lwd = 2)
+    }
+
+    if (alternative == "greater") {
+        polygon(cbind(c(muA - 4 * sigma/sqrt(n), seq(from = muA - 4 * sigma/sqrt(n),
+            to = mu0 + qnorm(1 - alpha) * sigma/sqrt(n), length.out = 100),
+            mu0 + qnorm(1 - alpha) * sigma/sqrt(n))), c(0, dnorm(seq(from = muA -
+            4 * sigma/sqrt(n), to = mu0 + qnorm(1 - alpha) * sigma/sqrt(n),
+            length.out = 100), mean = muA, sd = sigma/sqrt(n)), 0), border = "black",
+            col = "grey")
+        abline(v = mu0 + qnorm(1 - alpha) * sigma/sqrt(n), col = "black", lty = 3,
+            lwd = 2)
+    }
+
+    if (alternative == "two.tailed") {
+        abline(v = mu0 - qnorm(1 - alpha/2) * sigma/sqrt(n), col = "black",
+            lty = 3, lwd = 2)
+        abline(v = mu0 + qnorm(1 - alpha/2) * sigma/sqrt(n), col = "black",
+            lty = 3, lwd = 2)
+
+        if (z > 0) {
+            # greater
+            polygon(cbind(c(muA - 4 * sigma/sqrt(n), seq(from = muA - 4 * sigma/sqrt(n),
+                to = mu0 + qnorm(1 - alpha/2) * sigma/sqrt(n), length.out = 100),
+                mu0 + qnorm(1 - alpha/2) * sigma/sqrt(n))), c(0, dnorm(seq(from = muA -
+                4 * sigma/sqrt(n), to = mu0 + qnorm(1 - alpha/2) * sigma/sqrt(n),
+                length.out = 100), mean = muA, sd = sigma/sqrt(n)), 0), border = "black",
+                col = "grey")
+        }
+
+        # less
+        if (z < 0) {
+            polygon(cbind(c(mu0 - qnorm(1 - alpha/2) * sigma/sqrt(n), seq(from = mu0 -
+                qnorm(1 - alpha/2) * sigma/sqrt(n), to = muA + 4 * sigma/sqrt(n),
+                length.out = 100), muA + 4 * sigma/sqrt(n))), c(0, dnorm(seq(mu0 -
+                qnorm(1 - alpha/2) * sigma/sqrt(n), to = muA + 4 * sigma/sqrt(n),
+                length.out = 100), mean = muA, sd = sigma/sqrt(n)), 0), border = "black",
+                col = "grey")
+        }
+    }
+
+    return(length(p[p >= alpha])/k)
+}
+```
+
+## Challenge 2
+
+```{r}
+eII <- typeII(mu0 = 2, muA = 4, sigma = 3, n = 6, alternative = "greater")  # Ha > H0
+```
+
+```{r}
+eII <- typeII(mu0 = 5, muA = 2, sigma = 4, n = 18, alternative = "less")  # Ha < H0
+```
+
+```{r}
+eII <- typeII(mu0 = 5, muA = 7, sigma = 2, n = 15, alternative = "two.tailed")  # Ha ≠ H0
+```
+
+```{r} 
+#CANNOT RUN THIS INLINE
+library(ggplot2)
+library(manipulate)
+power.plot <- function(sigma, muA, mu0, n, alpha, alternative = "two.tailed") {
+    pow <- 0
+    z <- (muA - mu0)/(sigma/sqrt(n))
+    g <- ggplot(data.frame(mu = c(min(mu0 - 4 * sigma/sqrt(n), muA - 4 * sigma/sqrt(n)),
+        max(mu0 + 4 * sigma/sqrt(n), muA + 4 * sigma/sqrt(n)))), aes(x = mu)) +
+        ggtitle("Explore Power for Z Test")
+    g <- g + ylim(c(0, max(dnorm(mu0, mu0, sigma/sqrt(n)) + 0.1, dnorm(muA,
+        muA, sigma/sqrt(n)) + 0.1)))
+    g <- g + stat_function(fun = dnorm, geom = "line", args = list(mean = mu0,
+        sd = sigma/sqrt(n)), size = 1, col = "red", show.legend = TRUE)
+    g <- g + stat_function(fun = dnorm, geom = "line", args = list(mean = muA,
+        sd = sigma/sqrt(n)), size = 1, col = "blue", show.legend = TRUE)
+
+    if (alternative == "greater") {
+        if (z > 0) {
+            xcrit = mu0 + qnorm(1 - alpha) * sigma/sqrt(n)
+            g <- g + geom_segment(x = xcrit, y = 0, xend = xcrit, yend = max(dnorm(mu0,
+                mu0, sigma/sqrt(n)) + 0.025, dnorm(muA, muA, sigma/sqrt(n)) +
+                0.025), size = 0.5, linetype = 3)
+            g <- g + geom_polygon(data = data.frame(cbind(x = c(xcrit, seq(from = xcrit,
+                to = muA + 4 * sigma/sqrt(n), length.out = 100), muA + 4 * sigma/sqrt(n)),
+                y = c(0, dnorm(seq(from = xcrit, to = muA + 4 * sigma/sqrt(n),
+                  length.out = 100), mean = muA, sd = sigma/sqrt(n)), 0))),
+                aes(x = x, y = y), fill = "blue", alpha = 0.5)
+            pow <- pnorm(muA + 4 * sigma/sqrt(n), muA, sigma/sqrt(n)) - pnorm(xcrit,
+                muA, sigma/sqrt(n))
+        }
+    }
+    if (alternative == "less") {
+        if (z < 0) {
+            xcrit = mu0 - qnorm(1 - alpha) * sigma/sqrt(n)
+            g <- g + geom_segment(x = xcrit, y = 0, xend = xcrit, yend = max(dnorm(mu0,
+                mu0, sigma/sqrt(n)) + 0.025, dnorm(muA, muA, sigma/sqrt(n)) +
+                0.025), size = 0.5, linetype = 3)
+            g <- g + geom_polygon(data = data.frame(cbind(x = c(muA - 4 * sigma/sqrt(n),
+                seq(from = muA - 4 * sigma/sqrt(n), to = xcrit, length.out = 100),
+                xcrit), y = c(0, dnorm(seq(from = muA - 4 * sigma/sqrt(n), to = xcrit,
+                length.out = 100), mean = muA, sd = sigma/sqrt(n)), 0))), aes(x = x,
+                y = y), fill = "blue", alpha = 0.5)
+            pow <- pnorm(xcrit, muA, sigma/sqrt(n)) - pnorm(muA - 4 * sigma/sqrt(n),
+                muA, sigma/sqrt(n))
+        }
+    }
+    if (alternative == "two.tailed") {
+        if (z > 0) {
+            xcrit = mu0 + qnorm(1 - alpha/2) * sigma/sqrt(n)
+            g <- g + geom_segment(x = xcrit, y = 0, xend = xcrit, yend = max(dnorm(mu0,
+                mu0, sigma/sqrt(n)) + 0.025, dnorm(muA, muA, sigma/sqrt(n)) +
+                0.025), size = 0.5, linetype = 3)
+            g <- g + geom_polygon(data = data.frame(cbind(x = c(xcrit, seq(from = xcrit,
+                to = muA + 4 * sigma/sqrt(n), length.out = 100), muA + 4 * sigma/sqrt(n)),
+                y = c(0, dnorm(seq(from = xcrit, to = muA + 4 * sigma/sqrt(n),
+                  length.out = 100), mean = muA, sd = sigma/sqrt(n)), 0))),
+                aes(x = x, y = y), fill = "blue", alpha = 0.5)
+            pow <- pnorm(muA + 4 * sigma/sqrt(n), muA, sigma/sqrt(n)) - pnorm(xcrit,
+                muA, sigma/sqrt(n))
+        }
+        if (z < 0) {
+            xcrit = mu0 - qnorm(1 - alpha/2) * sigma/sqrt(n)
+            g <- g + geom_segment(x = xcrit, y = 0, xend = xcrit, yend = max(dnorm(mu0,
+                mu0, sigma/sqrt(n)) + 0.025, dnorm(muA, muA, sigma/sqrt(n)) +
+                0.025), size = 0.5, linetype = 3)
+            g <- g + geom_polygon(data = data.frame(cbind(x = c(muA - 4 * sigma/sqrt(n),
+                seq(from = muA - 4 * sigma/sqrt(n), to = xcrit, length.out = 100),
+                xcrit), y = c(0, dnorm(seq(from = muA - 4 * sigma/sqrt(n), to = xcrit,
+                length.out = 100), mean = muA, sd = sigma/sqrt(n)), 0))), aes(x = x,
+                y = y), fill = "blue", alpha = 0.5)
+            pow <- pnorm(xcrit, muA, sigma/sqrt(n)) - pnorm(muA - 4 * sigma/sqrt(n),
+                muA, sigma/sqrt(n))
+        }
+    }
+    g <- g + annotate("text", x = max(mu0, muA) + 2 * sigma/sqrt(n), y = max(dnorm(mu0,
+        mu0, sigma/sqrt(n)) + 0.075, dnorm(muA, muA, sigma/sqrt(n)) + 0.075),
+        label = paste("Effect Size = ", round((muA - mu0)/sigma, digits = 3),
+            "\nPower = ", round(pow, digits = 3), sep = ""))
+    g <- g + annotate("text", x = min(mu0, muA) - 2 * sigma/sqrt(n), y = max(dnorm(mu0,
+        mu0, sigma/sqrt(n)) + 0.075, dnorm(muA, muA, sigma/sqrt(n)) + 0.075),
+        label = "Red = mu0\nBlue = muA")
+    g
+}
+manipulate(plot(1:5, cex = size), size = slider(0.5, 10, step = 0.5))  #run this to get it going
+manipulate(power.plot(sigma, muA, mu0, n, alpha, alternative), sigma = slider(1,
+    10, step = 1, initial = 4), muA = slider(-10, 10, step = 1, initial = 2),
+    mu0 = slider(-10, 10, step = 1, initial = 0), n = slider(1, 50, step = 1,
+        initial = 16), alpha = slider(0.01, 0.1, step = 0.01, initial = 0.05),
+    alternative = picker("two.tailed", "greater", "less"))
+```
+
+## Challenge 3
+
+```{r}
+library(ggplot2)
+library(manipulate)
+power.test <- function(mu0, muA, sigma, alpha = 0.05, type, alternative) {
+    p <- 0
+    for (i in 2:200) {
+        x <- power.t.test(n = i, delta = abs(muA - mu0), sd = sigma, sig.level = alpha,
+            power = NULL, type = type, alternative = alternative)
+        p <- c(p, x$power)
+    }
+    d <- data.frame(cbind(1:200, p, 1 - p))
+    critn <- 0
+    for (i in 1:199) {
+        if (p[i] < 0.8 && p[i + 1] >= 0.8) {
+            critn <- i + 1
+        } else {
+            critn <- critn
+        }
+    }
+    names(d) <- c("n", "power", "beta")
+    g <- ggplot(data = d) + xlab("sample size n") + ylab("Type II Error Rate, Beta  (Red)\nand\nPower, 1-Beta (Blue)") +
+        ggtitle("Power for T Tests\n(assuming equal n and variance across the two groups)") +
+        ylim(0, 1) + geom_point(aes(x = n, y = power), colour = "blue", alpha = 1/2) +
+        geom_line(aes(x = n, y = power), colour = "blue", alpha = 1/2) + geom_line(aes(x = n,
+        y = 0.8), colour = "red", lty = 3) + geom_point(aes(x = n, y = beta),
+        colour = "red", alpha = 1/2) + geom_line(aes(x = n, y = beta), colour = "red",
+        alpha = 1/2) + geom_linerange(aes(x = critn, ymin = 0, ymax = 0.8),
+        colour = "blue", alpha = 1/4) + annotate("text", x = 150, y = 0.5, label = paste("Effect Size = ",
+        round(abs(mu0 - muA)/sigma, digits = 3), "\nCritical n = ", critn, sep = ""))
+    print(g)
+}
+manipulate(plot(1:5, cex = size), size = slider(0.5, 10, step = 0.5))  #run this to get it going
+manipulate(power.test(mu0, muA, sigma, alpha, type, alternative), mu0 = slider(-10,
+    10, initial = 3, step = 1), muA = slider(-10, 10, initial = 0, step = 1),
+    sigma = slider(1, 10, initial = 3, step = 1), alpha = slider(0.01, 0.1,
+        initial = 0.05, step = 0.01), alternative = picker("two.sided", "one.sided"),
+    type = picker("two.sample", "one.sample", "paired"))
+    ```
+  
+  
+## Module 12 
+
+```{r}
+install.packages("gridExtra")
+install.packages("lmodel2")
+library(curl)
+library(manipulate)
+library(ggplot2)
+library(gridExtra)
+library(lmodel2)
+```
+
+```{r}
+library(ggplot2)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/zombies.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+```{r}
+plot(data = d, height ~ weight)
+```
+
+## Challenge 1
+
+```{r}
+w <- d$weight
+h <- d$height
+n <- length(w)  # or length(h)
+cov_wh <- sum((w - mean(w)) * (h - mean(h)))/(n - 1)
+cov_wh
+```
+
+````{r}
+cov(w, h)
+```
+
+## Challenge 2
+```{r}
+sd_w <- sd(w)
+sd_h <- sd(h)
+cor_wh <- cov_wh/(sd_w * sd_h)
+cor_wh
+```
+```{r}
+cor(w, h)
+```
+
+```{r}
+cor(w, h, method = "pearson")
+```
+
+```{r}
+cor(w, h, method = "spearman")
+```
+
+```{r}
+cor(w, h, method = "kendall")
+```
+
+```{r}
+y <- h - mean(h)
+x <- w - mean(w)
+z <- data.frame(cbind(x, y))
+g <- ggplot(data = z, aes(x = x, y = y)) + geom_point()
+g
+```
+
+```{r}
+slope.test <- function(beta1) {
+    g <- ggplot(data = z, aes(x = x, y = y))
+    g <- g + geom_point()
+    g <- g + geom_abline(intercept = 0, slope = beta1, size = 1, colour = "blue",
+        alpha = 1/2)
+    ols <- sum((y - beta1 * x)^2)
+    g <- g + ggtitle(paste("Slope = ", beta1, "\nSum of Squared Deviations = ",
+        round(ols, 3)))
+    g
+}
+```
+
+```{r}
+manipulate(plot(1:5, cex = size), size = slider(0.5, 10, step = 0.5))  #priming the interface
+manipulate(slope.test(beta1), beta1 = slider(-1, 1, initial = 0, step = 0.005))  #here we go!
+```
+
+```{r}
+beta1 <- cor(w, h) * (sd(h)/sd(w))
+beta1
+```
+
+```{r}
+beta1 <- cov(w, h)/var(w)
+beta1
+```
+
+```{r}
+beta1 <- sum((h - mean(h)) * (w - mean(w)))/sum((w - mean(w))^2)
+beta1
+```
+
+```{r}
+beta0 <- mean(h) - beta1 * mean(w)
+beta0
+```
+
+```{r}
+m <- lm(height ~ weight, data = d)
+m
+```
+
+```{r}
+names(m)
+```
+
+```{r}
+m$coefficients
+```
+
+```{r}
+head(m$model)
+```
+
+```{r}
+g <- ggplot(data = d, aes(x = weight, y = height))
+g <- g + geom_point()
+g <- g + geom_smooth(method = "lm", formula = y ~ x)
+g
+```
+
+```{r}
+library(lmodel2)  # load the lmodel2 package
+# Run the regression
+mII <- lmodel2(height ~ weight, data = d, range.y = "relative", range.x = "relative",
+    nperm = 1000)
+mII
+```
+
+```{r}
+plot(mII, "OLS")
+```
+
+```{r}
+plot(mII, "RMA")
+```
+
+```{r}
+plot(mII, "SMA")
+```
+
+```{r}
+plot(mII, "MA")
+```
+
+```{r}
+mI <- lm(height ~ weight, data = d)
+summary(mI)
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(mII, main = "lmodel2() OLS")
+plot(data = d, height ~ weight, main = "lm()")
+abline(mI)
+```
+
+## Challenge 3
+
+```{r}
+plot(data = d, height ~ age)
+```
+
+```{r}
+head(d)
+```
+
+```{r}
+beta1 <- cor(d$height, d$age) * sd(d$height)/sd(d$age)
+beta1
+```
+
+```{r}
+beta0 <- mean(d$height) - beta1 * mean(d$age)
+beta0
+```
+
+```{r}
+m <- lm(height ~ age, data = d)
+m
+```
+
+```{r}
+m <- lm(data = d, height ~ weight)
+summary(m)
+```
+
+```{r}
+t <- coef(summary(m))
+t <- data.frame(unlist(t))
+colnames(t) <- c("Est", "SE", "t", "p")
+t
+```
+
+```{r}
+t$calct <- (t$Est - 0)/t$SE
+t$calcp <- 2 * pt(t$calct, df = 998, lower.tail = FALSE)  # x2 because is 2-tailed test
+t
+```
+
+```{r}
+t$lower <- t$Est - qt(0.975, df = 998) * t$SE
+t$upper <- t$Est + qt(0.975, df = 998) * t$SE
+ci <- c(t$lower, t$upper)  # by hand
+ci
+```
+
+```{r}
+ci <- confint(m, level = 0.95)  # using the results of lm()
+ci
+```
+
+## Challenge 4
+
+```{r}
+beta0 <- t$Est[1]
+beta1 <- t$Est[2]
+h_hat <- beta1 * 150 + beta0
+h_hat
+```
+
+```{r}
+h_hat_difference <- (beta1 * 220 + beta0) - (beta1 * 180 + beta0)
+h_hat_difference
+```
+
+```{r}
+m <- lm(data = d, height ~ weight)
+h_hat <- predict(m, newdata = data.frame(weight = d$weight))
+df <- data.frame(cbind(d$weight, d$height, h_hat))
+names(df) <- c("x", "y", "yhat")
+head(df)
+```
+
+```{r}
+g <- ggplot(data = df, aes(x = x, y = yhat))
+g <- g + geom_point()
+g <- g + geom_point(aes(x = x, y = y), colour = "red")
+g <- g + geom_segment(aes(x = x, y = yhat, xend = x, yend = y))
+g
+```
+
+```{r}
+ci <- predict(m, newdata = data.frame(weight = 150), interval = "confidence",
+    level = 0.95)  # for a single value
+ci
+```
+
+```{r}
+ci <- predict(m, newdata = data.frame(weight = d$weight), interval = "confidence",
+    level = 0.95)  # for a vector of values
+head(ci)
+```
+
+```{r}
+df <- cbind(df, ci)
+names(df) <- c("x", "y", "yhat", "CIfit", "CIlwr", "CIupr")
+head(df)
+```
+
+```{r}
+g <- ggplot(data = df, aes(x = x, y = y))
+g <- g + geom_point(alpha = 1/2)
+g <- g + geom_line(aes(x = x, y = CIfit), colour = "black")
+g <- g + geom_line(aes(x = x, y = CIlwr), colour = "blue")
+g <- g + geom_line(aes(x = x, y = CIupr), colour = "blue")
+g
+```
+
+```{r}
+pi <- predict(m, newdata = data.frame(weight = 150), interval = "prediction",
+    level = 0.95)  # for a single value
+pi
+```
+
+```{r}
+pi <- predict(m, newdata = data.frame(weight = d$weight), interval = "prediction",
+    level = 0.95)  # for a vector of values
+head(pi)
+```
+
+```{r}
+df <- cbind(df, pi)
+names(df) <- c("x", "y", "yhat", "CIfit", "CIlwr", "CIupr", "PIfit", "PIlwr",
+    "PIupr")
+head(df)
+```
+
+```{r}
+g <- g + geom_line(data = df, aes(x = x, y = PIlwr), colour = "red")
+g <- g + geom_line(data = df, aes(x = x, y = PIupr), colour = "red")
+g
+```
+
+## Challenge 5
+
+```{r}
+v <- seq(from = 10, to = 30, by = 1)
+m <- lm(data = d, height ~ age)
+ci <- predict(m, newdata = data.frame(age = v), interval = "confidence", level = 0.95)
+pi <- predict(m, newdata = data.frame(age = v), interval = "prediction", level = 0.95)
+plot(data = d, height ~ age)
+lines(x = v, y = ci[, 1], col = "black")
+lines(x = v, y = ci[, 2], col = "blue")
+lines(x = v, y = ci[, 3], col = "blue")
+lines(x = v, y = pi[, 2], col = "red")
+lines(x = v, y = pi[, 3], col = "red")
+```
+
+```{r}
+# or
+require(gridExtra)
+```
+
+```{r}
+require(ggplot2)
+df <- data.frame(cbind(v, ci, pi))
+names(df) <- c("age", "CIfit", "CIlwr", "CIupr", "PIfit", "PIlwr", "PIupr")
+head(df)
+```
+
+```{r}
+g1 <- ggplot(data = d, aes(x = age, y = height))
+g1 <- g1 + geom_point(alpha = 1/2)
+g1 <- g1 + geom_line(data = df, aes(x = v, y = CIfit), colour = "black", lwd = 1)
+g1 <- g1 + geom_line(data = df, aes(x = v, y = CIlwr), colour = "blue")
+g1 <- g1 + geom_line(data = df, aes(x = v, y = CIupr), colour = "blue")
+g1 <- g1 + geom_line(data = df, aes(x = v, y = PIlwr), colour = "red")
+g1 <- g1 + geom_line(data = df, aes(x = v, y = PIupr), colour = "red")
+g2 <- ggplot(data = d, aes(x = age, y = height))
+g2 <- g2 + geom_point(alpha = 1/2)
+g2 <- g2 + geom_smooth(method = "lm", formula = y ~ x)
+grid.arrange(g1, g2, ncol = 2)
+```
+
