@@ -1,0 +1,267 @@
+---
+title: "Module 13"
+author: "Lillian Holden"
+date: "2023-10-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(curl)
+install.packages("car")
+library(car)
+```
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/zombies.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+```
+
+```{r}
+m <- lm(data = d, height ~ weight)
+SSY <- sum((m$model$height - mean(m$model$height))^2)  # height - mean(height)
+SSY
+```
+
+```{r}
+SSR <- sum((m$fitted.values - mean(m$model$height))^2)  # predicted height - mean height
+SSR
+```
+
+```{r}
+SSE <- sum((m$model$height - m$fitted.values)^2)  # height - predicted height
+SSE
+```
+
+```{r}
+df_regression <- 1
+df_error <- 998
+df_y <- 999
+MSR <- SSR/df_regression
+MSE <- SSE/df_error
+MSY <- SSY/df_y
+```
+
+```{r}
+fratio <- MSR/MSE
+fratio
+```
+
+```{r}
+curve(df(x, df = 1, df2 = 1), col = "green", lty = 3, lwd = 2, xlim = c(0, 10),
+    main = "Some Example F Distributions\n(vertical line shows critical value for df1=1,df2=998)",
+    ylab = "f(x)", xlab = "x")
+curve(df(x, df = 2, df2 = 2), col = "blue", lty = 3, lwd = 2, add = TRUE)
+curve(df(x, df = 4, df2 = 4), col = "red", lty = 3, lwd = 2, add = TRUE)
+curve(df(x, df = 8, df2 = 6), col = "purple", lty = 3, lwd = 2, add = TRUE)
+curve(df(x, df = 1, df2 = 998), col = "black", lwd = 3, add = TRUE)
+legend("top", c("df1=1,df2=1", "df1=2,df2=2", "df1=4,df2=4", "df1=8,df2=6",
+    "df1=1,df2=998"), lty = 3, lwd = 2, col = c("green", "blue", "red", "purple",
+    "black"), bty = "n", cex = 0.75)
+
+fcrit <- qf(p = 0.95, df1 = 1, df2 = 998)
+fcrit
+```
+
+```{r}
+abline(v = fcrit)
+abline(h = 0)
+polygon(cbind(c(fcrit, seq(from = fcrit, to = 10, length.out = 1000), 8), c(0,
+    df(seq(from = fcrit, to = 8, length.out = 1000), df1 = 1, df2 = 998), 0)),
+    border = "black", col = "grey")
+```
+
+```{r}
+1 - pf(q = fratio, df1 = 1, df2 = 998)
+```
+
+```{r}
+a <- aov(data = d, height ~ weight)
+summary(a)
+```
+
+```{r}
+summary.aov(m)
+```
+
+```{r}
+rsquared <- SSR/SSY
+rsquared
+```
+
+```{r}
+rho <- sqrt(rsquared)
+rho
+```
+
+```{r}
+SSX <- sum((m$model$weight - mean(m$model$weight))^2)
+SEbeta1 <- sqrt(MSE/SSX)
+SEbeta1
+```
+
+```{r}
+SEbeta0 <- sqrt((MSE * sum(m$model$weight^2))/(1000 * SSX))
+SEbeta0
+```
+
+```{r}
+SEyhat <- sqrt(MSE * (1/1000 + (m$model$weight - mean(m$model$weight))^2/SSX))
+head(SEyhat)  # just the first 6 rows
+```
+
+```{r}
+summary(m)
+```
+
+## Challenge 1
+```{r}
+m <- lm(data = d, height ~ weight)
+plot(x = d$weight, y = m$residuals)
+```
+
+```{r}
+# or
+e <- resid(m)
+plot(x = d$weight, y = e)
+```
+
+```{r}
+hist(e, xlim = c(-4 * sd(e), 4 * sd(e)), breaks = 20, main = "Histogram of Residuals")
+```
+
+```{r}
+plot(m$model$weight, m$residuals)
+```
+
+```{r}
+par(mfrow = c(2, 2))
+plot(m)
+```
+
+```{r}
+qqnorm(m$residuals)
+```
+
+```{r}
+library(car)
+```
+
+```{r}
+qqPlot(m$residuals)
+```
+
+```{r}
+s <- shapiro.test(m$residuals)
+s
+```
+
+## Challenge 2
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/KamilarAndCooperData.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+```{r}
+plot(data = d, WeaningAge_d ~ Body_mass_female_mean)
+```
+
+```{r}
+model <- lm(data = d, WeaningAge_d ~ Body_mass_female_mean)
+summary(model)
+```
+
+```{r}
+plot(model)
+```
+
+```{r}
+qqPlot(model$residuals)
+```
+
+```{r}
+s <- shapiro.test(model$residuals)
+s
+```
+
+## Challenge 3 
+```{r}
+d$logWeaningAge <- log(d$WeaningAge_d)
+d$logFemaleBodyMass <- log(d$Body_mass_female_mean)
+plot(data = d, logWeaningAge ~ logFemaleBodyMass)
+```
+
+```{r}
+model <- lm(data = d, logWeaningAge ~ logFemaleBodyMass)
+summary(model)
+```
+
+```{r}
+plot(model)
+```
+
+```{r}
+qqPlot(model$residuals)
+```
+
+```{r}
+s <- shapiro.test(model$residuals)
+s
+```
+
+```{r}
+par(mfrow = c(1, 2))
+
+a <- 2
+b <- 2
+
+# log x
+x <- seq(from = 0, to = 100, length.out = 1000)
+y <- a + b * log(x)
+plot(x, y, type = "l", main = "untransformed")
+plot(log(x), y, type = "l", main = "log(x)")
+```
+
+```{r}
+# log y
+x <- seq(from = 0, to = 10, length.out = 1000)
+y <- exp(a + b * x)
+plot(x, y, type = "l", main = "untransformed")
+plot(x, log(y), type = "l", main = "log(y)")
+```
+
+```{r}
+# assymptotic
+x <- seq(from = 1, to = 100, length.out = 100)
+y <- (a * x)/(1 + b * x)
+plot(x, y, type = "l", main = "untransformed")
+plot(1/x, y, type = "l", main = "1/x")
+```
+
+```{r}
+# reciprocal
+x <- seq(from = 1, to = 100, length.out = 100)
+y <- a + b/x
+plot(x, y, type = "l", main = "untransformed")
+plot(1/x, y, type = "l", main = "1/x")
+```
+
+```{r}
+# power
+x <- seq(from = 1, to = 100, length.out = 100)
+y <- a * x^b
+plot(x, y, type = "l", main = "untransformed")
+plot(x^b, y, type = "l", main = "x^b")
+```
+
+```{r}
+# exp
+x <- seq(from = 1, to = 10, length.out = 100)
+y <- a * exp(b * x)
+plot(x, y, type = "l", main = "untransformed")
+plot(x, log(y), type = "l", main = "log(y)")
+```

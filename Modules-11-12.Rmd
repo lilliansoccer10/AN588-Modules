@@ -3,6 +3,8 @@ title: "Modules 11-12"
 author: "Lillian Holden"
 date: "2023-10-07"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -21,6 +23,7 @@ library(manipulate)
 ## Type I Error 
 
 ```{r}
+#skeleton function, empty function 
 typeI <- function(mu0, sigma, n, alternative = "two.tailed", alpha = 0.05, k = 10000) {
 }
 ```
