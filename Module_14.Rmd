@@ -1,0 +1,396 @@
+---
+title: "Module 14"
+author: "Lillian Holden"
+date: "2023-10-26"
+output: html_document
+---
+
+```{r}
+library(curl)
+```
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/zombies.csv")
+z <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+class(z$gender)
+```
+
+```{r}
+summary(z$gender)
+```
+
+```{r}
+plot(z$height ~ z$gender)
+```
+
+```{r}
+m <- lm(data = z, height ~ gender)
+summary(m)
+```
+
+```{r}
+levels(z$gender)
+```
+
+```{r}
+z$gender <- relevel(z$gender, ref = "Male")
+m <- lm(data = z, height ~ gender)
+summary(m)
+```
+
+```{r}
+p <- 1 - pf(276.9, df1 = 1, df2 = 998)
+p
+```
+
+```{r}
+z$occupation <- "temp"
+```
+
+```{r}
+unique(z$major)
+```
+
+```{r}
+levels(z$major)
+```
+
+```{r}
+row(data.frame(levels(z$major)))
+```
+
+```{r}
+z$occupation[row(data.frame(levels(z$major))) %in% c(1, 2, 3, 5, 6, 14, 15,
+    16, 18, 21, 23)] <- "natural science"
+z$occupation[row(data.frame(levels(z$major))) %in% c(7, 8, 12, 17, 19, 22)] <- "logistics"
+z$occupation[row(data.frame(levels(z$major))) %in% c(4, 18, 20)] <- "engineering"
+z$occupation[row(data.frame(levels(z$major))) %in% c(9, 10, 11, 13, 24, 25,
+    26)] <- "other"
+z$occupation <- as.factor(z$occupation)
+levels(z$occupation)
+```
+
+```{r}
+z$occupation <- relevel(z$occupation, ref = "natural science")
+levels(z$occupation)
+```
+
+```{r}
+plot(data = z, zombies_killed ~ occupation)
+```
+
+```{r}
+m <- lm(data = z, zombies_killed ~ occupation)
+summary(m)
+```
+
+```{r}
+p <- 1 - pf(0.526, df1 = 3, df2 = 996)  # F test
+p
+```
+
+```{r}
+m <- aov(data = z, zombies_killed ~ occupation)
+summary(m)
+```
+
+```{r}
+par(mfrow = c(2, 2))
+plot(m)
+```
+
+
+### Challenge 1
+
+```{r}
+library(curl)
+library(dplyr)
+```
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/gibbon-femurs.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+d$age <- factor(d$age, levels = c("inf", "juv", "subadult", "adult"))  #this reorders the age levels so that they're in order
+head(d)
+```
+
+```{r}
+hist(d$femur.length)
+```
+
+```{r}
+qqnorm(d$femur.length)
+```
+
+```{r}
+plot(data = d, femur.length ~ age)  # boxplot with medians
+means <- summarise(group_by(d, age), mean(femur.length))  # calculate average by group
+points(1:4, means$`mean(femur.length)`, pch = 4, cex = 1.5)  # add means to plot
+```
+
+```{r}
+sds <- summarise(group_by(d, age), sd(femur.length))
+max(sds$`sd(femur.length)`)/min(sds$`sd(femur.length)`)  # check that variances are roughly equal (ratio of max/min is <2)
+```
+
+```{r}
+means.centered <- d$femur.length - means[as.numeric(d$age), 2]  # subtract relevant group mean from each data point
+qqnorm(means.centered$`mean(femur.length)`)  # graphical tests for normality
+```
+
+```{r}
+par(mfrow = c(2, 2))
+hist(d$femur.length[d$age == "inf"], main = "inf")
+qqnorm(d$femur.length[d$age == "inf"])
+hist(d$femur.length[d$age == "juv"], main = "juv")
+qqnorm(d$femur.length[d$age == "juv"])
+```
+
+```{r}
+hist(d$femur.length[d$age == "subadult"], main = "subadult")
+qqnorm(d$femur.length[d$age == "subadult"])
+hist(d$femur.length[d$age == "adult"], main = "adult")
+qqnorm(d$femur.length[d$age == "adult"])
+```
+
+```{r}
+par(mfrow = c(1, 1))
+plot(data = d, femur.length ~ age)
+```
+
+```{r}
+m <- aov(data = d, femur.length ~ age)  # femur length related to age
+summary(m)
+```
+
+```{r}
+m <- lm(data = d, femur.length ~ age)
+summary(m)
+```
+
+```{r}
+pairwise.t.test(d$femur.length, d$age, p.adj = "bonferroni")
+```
+
+```{r}
+m <- aov(d$femur.length ~ d$age)
+posthoc <- TukeyHSD(m, "d$age", conf.level = 0.95)
+posthoc  # all age-sex classes differ
+```
+
+```{r}
+m <- kruskal.test(data = d, femur.length ~ age)
+m
+```
+
+```{r}
+d <- arrange(d, femur.length)  # use {dplyr} to sort by femur.length
+d <- mutate(d, femur.rank = row(data.frame(d$femur.length)))  # use {dplyr} to add new variable of rank femur.length
+m <- kruskal.test(data = d, femur.rank ~ age)
+m
+```
+
+```{r}
+library(ggplot2)
+means <- summarise(group_by(d, age, sex), mean(femur.length))  # first we calculate averages by combination of factors
+```
+
+```{r}
+means
+```
+
+```{r}
+sds <- summarise(group_by(d, age, sex), sd(femur.length))  # first we calculate averages by combination of factors
+```
+
+```{r}
+sds
+```
+
+```{r}
+max(sds$`sd(femur.length)`)/min(sds$`sd(femur.length)`)  # check that variances in each group are roughly equal (ratio of max/min is <2)
+```
+
+```{r}
+p <- ggplot(data = d, aes(y = femur.length, x = sex)) + geom_boxplot() + facet_wrap(~age,
+    ncol = 4)  # and let's plot what the data look like
+# p <- p + geom_point() # uncommenting this shows all points
+p <- p + stat_summary(fun.y = mean, colour = "darkgreen", geom = "point", shape = 8,
+    size = 6)
+p
+```
+
+```{r}
+summary(aov(data = d, femur.length ~ age))
+```
+
+```{r}
+summary(aov(data = d, femur.length ~ sex))
+```
+
+```{r}
+m <- summary(aov(data = d, femur.length ~ age + sex))
+m
+```
+
+```{r}
+m <- aov(data = d, femur.length ~ age + sex + age:sex)  # : operator includes specific interaction terms
+summary(m)
+```
+
+```{r}
+m <- aov(data = d, femur.length ~ age * sex)  # * operator includes all interaction terms
+summary(m)
+```
+
+```{r}
+m <- lm(data = d, femur.length ~ age * sex)  # or using the lm() function...
+summary(m)
+```
+
+```{r}
+interaction.plot(x.factor = d$age, xlab = "Age", trace.factor = d$sex, trace.label = "Sex",
+    response = d$femur.length, fun = mean, ylab = "Mean Femuur Length")
+```
+
+```{r}
+m1 <- aov(data = d, femur.length ~ age * sex)
+summary(m1)
+```
+
+```{r}
+m2 <- aov(data = d, femur.length ~ sex * age)
+summary(m2)
+```
+
+```{r}
+m1 <- lm(data = d, femur.length ~ age * sex)
+summary(m1)
+```
+
+```{r}
+m2 <- lm(data = d, femur.length ~ sex * age)
+summary(m2)
+```
+
+```{r}
+table(d$sex, d$age)
+```
+
+```{r}
+library(car)
+```
+
+```{r}
+m1 <- aov(data = d, femur.length ~ age + sex)
+m1 <- Anova(m1, type = "II")
+m1
+```
+
+```{r}
+m1 <- aov(data = d, femur.length ~ sex + age)
+m2 <- Anova(m2, type = "II")
+m2
+```
+
+```{r}
+m1 <- aov(data = d, femur.length ~ age * sex)
+m1 <- Anova(m1, type = "III")
+m1
+```
+
+```{r}
+m2 <- aov(data = d, femur.length ~ sex * age)
+m2 <- Anova(m2, type = "III")
+m2
+```
+
+### Challenge 2
+```{r}
+obs.table <- table(z$occupation)  # returns the same as summary()
+obs.table
+```
+
+```{r}
+exp.table <- rep(0.25 * length(z$occupation), 4)
+exp.table
+```
+
+```{r}
+occupation.matrix <- data.frame(cbind(obs.table, exp.table, (obs.table - exp.table)^2/exp.table))
+names(occupation.matrix) <- c("Oi", "Ei", "(Oi-Ei)^2/Ei")
+occupation.matrix
+```
+
+```{r}
+X2 <- sum(occupation.matrix[, 3])
+X2
+```
+
+```{r}
+p <- 1 - pchisq(X2, length(obs.table) - 1)
+p
+```
+
+```{r}
+chisq.test(x = obs.table, p = c(0.25, 0.25, 0.25, 0.25))  # here p is a vector of expected proportions... default is uniform
+```
+
+```{r}
+chisq.test(x = obs.table)
+```
+
+```{r}
+chisq.test(x = obs.table, p = c(0.38, 0.12, 0.23, 0.27))  # with a different set of expected proportions... fail to reject H0
+```
+
+```{r}
+obs.table = table(z$gender, z$occupation)
+obs.table
+```
+
+```{r}
+mosaicplot(t(obs.table), main = "Contingency Table", col = c("darkseagreen",
+    "gray"))  # t function transposes the table
+```
+
+```{r}
+r <- rowSums(obs.table)  # row margins
+r
+```
+
+```{r}
+c <- colSums(obs.table)  # column margins
+c
+```
+
+```{r}
+nr <- nrow(obs.table)  # row dimensions
+nr
+```
+
+```{r}
+nc <- ncol(obs.table)  # column dimensions
+nc
+```
+
+```{r}
+exp.table <- matrix(rep(c, each = nr) * r/sum(obs.table), nrow = nr, ncol = nc,
+    dimnames = dimnames(obs.table))  # calculates the product of c*r and divides by total
+exp.table
+```
+
+```{r}
+X2 <- sum((obs.table - exp.table)^2/exp.table)
+X2
+```
+
+```{r}
+p <- 1 - pchisq(X2, df = (nr - 1) * (nc - 1))
+p
+```
+
+```{r}
+chisq.test(x = obs.table)
+```
+
