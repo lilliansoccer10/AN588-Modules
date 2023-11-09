@@ -114,6 +114,9 @@ ORchange <- exp(glm$coefficients[2])
 ORchange  # a 1 unit increase in gre results in a 0.36% increase in likelihood of admission
 ```
 
+WALD STATISTIC IS LIKE T VALUE 
+
+
 ```{r}
 library(broom)
 glmresults <- tidy(glm)
@@ -139,7 +142,7 @@ CI
 CI <- glmresults$estimate[2] + c(-1, 1) * qnorm(0.975) * glmresults$std.error[2]  # and this is how we have calculated CIs by hand previously
 CI
 ```
-### Challenge 1
+### Challenge 1 (NEED TO FINISH THIS CHALLENGE)
 Repeat the logistic regression above, but using gpa rather than gre as the predictor variable.
 
 Is gpa a significant predictor of the odds of admission?

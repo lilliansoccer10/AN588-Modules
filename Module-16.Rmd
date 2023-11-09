@@ -83,8 +83,10 @@ summary(m0)
 
 ```{r}
 add1(m0, scope = . ~ . + age + weight + zombies_killed + years_of_education,
-    test = "F")
+    test = "F") #.~. take original model, then try out different covarients
 ```
+
+smallest aic is the best model, so height vs weight is the best model
 
 ```{r}
 m1 <- update(m0, formula = . ~ . + weight)
@@ -106,6 +108,8 @@ add1(m2, scope = . ~ . + age + weight + zombies_killed + years_of_education,
     test = "F")
 ```
 
+## adding these variables is not necessary because all aic values are pretty much the same.
+
 ```{r}
 summary(m2)
 ```
@@ -119,7 +123,7 @@ summary(m0)
 ```{r}
 drop1(m0, test = "F")
 ```
-
+#use lowest and instead of adding take it away 
 ```{r}
 m1 <- update(m0, . ~ . - years_of_education)
 summary(m1)
@@ -143,12 +147,14 @@ summary(m2)
 ```
 
 ## Model Selection Using AIC
+
+### stepAIC()
 ```{r}
 library(MASS)
 stepAIC(m0, direction = "both")
 ```
 
-```{r}
-library(AICcmodavg)
+```{r} 
+library(AICcmodavg) #USE FOR REPLICATION ANALYSIS
 print(aictab(list(m0, m1, m2), c("m0", "m1", "m2")), LL = FALSE)
 ```
