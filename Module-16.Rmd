@@ -19,7 +19,6 @@ EXAMPLE:
 Let’s go back to our zombie data and compare a few models. We need to calculate the following partial F statistic for the full versus reduced model.
 
 
-
 where:
 
 The R2 values are the coefficients of determination of the full model and the nested “reduced”" model
@@ -40,8 +39,8 @@ library(curl)
 ```{r}
 f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/zombies.csv")
 z <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = TRUE)
-m1 <- lm(data = z, height ~ age * gender)  # full model
-m2 <- lm(data = z, height ~ age + gender)  # model without interactions
+m1 <- lm(data = z, height ~ age * gender)  # full model (age+gender+interaction)
+m2 <- lm(data = z, height ~ age + gender)  # model without interactions 
 m3 <- lm(data = z, height ~ age)  # model with one predictor
 m4 <- lm(data = z, height ~ 1)  # intercept only model
 ```
