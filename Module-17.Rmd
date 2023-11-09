@@ -221,12 +221,13 @@ glm2 <- glm(data = d, admit ~ gpa, family = "binomial")
 anova(glm1, glm2, test = "Chisq")
 ```
 
+
 ```{r}
 library(lmtest)
 ```
 
 ```{r}
-library(lmtest)
+lrtest(glm1, glm2)
 ```
 
 ```{r}
@@ -280,6 +281,15 @@ p
 ```
 
 #Challenge 2
+Using the same “graddata.csv” dataset, run a multiple logistic regression analysis using gpa, gre, and rank to look at student admissions to graduate school. Do not, at first, include interaction terms.
+
+What variables are significant predictors of the log(odds ratio) of admission?
+
+What is the value of the log(odds ratio) coefficient and the 95% CIs around that value for the two continuous variable (gpa and gre), when taking the effects of the other and of rank into account? What do these translate into on the actual odds ratio scale?
+
+Is the model including all three predictors better than models that include just two predictors?
+
+Compare a model that includes the three predictors with no interactions versus one that includes the three predictors and all possible interactions.
 ```{r}
 d$rank <- as.factor(d$rank)  # make sure rank is a categorical variable
 glmGGR <- glm(data = d, formula = admit ~ gpa + gre + rank, family = binomial)  # 3 predictor model
@@ -449,6 +459,7 @@ AICreduced <- 2 * 1 - 2 * logLik(glm1)  # for this model, 1 param is estimated
 AICreduced
 ```
 ## Challenge 3
+Using the woolly monkey mating success data set, explore multiple Poisson regression models of [a] mating success in relation to rank and [b] mating success in relation to age + rank (and their interaction) on your own. What conclusions can you come to about the importance of rank and rank in combination with age versus age alone?
 ```{r}
 # glm of success~age
 glm1 <- glm(data = d, success ~ rank, family = "poisson")
