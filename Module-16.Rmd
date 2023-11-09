@@ -1,0 +1,155 @@
+---
+title: "Module 16"
+author: "Lillian Holden"
+date: "2023-11-09"
+output: html_document
+---
+
+Overview
+The purpose of a model selection process in a regression analysis is to sort through our explanatory variables in a systematic fashion in order to establish which are best able to describe the response. There are different possible algorithms to use for model selection, e.g., forward and backward selection, which may result in different parameters being included in the final model.
+
+Nested Comparisons
+
+One way we can compare different models is to use F ratios and what are called partial F tests. This approach looks at two or more nested models: a larger model that contains explanatory variables that we are interested in and smaller, less complex models that exclude one or more of those variables. Basically, we aim to compare the variance in the response variable explained by the more complex model to that explained by a “reduced” model. If the more complex model explains a significantly greater proportion of the variation, then we conclude that predictor terms absent from the less complex model are important.
+
+For example, if including an additional term with its associated β coefficient results in significantly better fit to the observed data than we find for a model that lacks that particular terms, then this is evidence against the null hypothesis that the β coefficient (slope) for that term equals zero.
+
+EXAMPLE:
+
+Let’s go back to our zombie data and compare a few models. We need to calculate the following partial F statistic for the full versus reduced model.
+
+
+
+where:
+
+The R2 values are the coefficients of determination of the full model and the nested “reduced”" model
+
+n is the number of observations in the data set
+
+p is the number of predictor terms in the nested (reduced) model
+
+q is the number of predictor terms in the full model
+
+After we calculate this F statistic, we compare it to an F distribution with df1 = q-p and df2 = n-q to derive a p value. The lm() function will do this for us automatically, but we can also do it by hand.
+
+
+```{r}
+library(curl)
+```
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/zombies.csv")
+z <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+m1 <- lm(data = z, height ~ age * gender)  # full model
+m2 <- lm(data = z, height ~ age + gender)  # model without interactions
+m3 <- lm(data = z, height ~ age)  # model with one predictor
+m4 <- lm(data = z, height ~ 1)  # intercept only model
+```
+
+```{r}
+anova(m2, m1, test = "F")  # compares the reduced model without interactions (m2) to the full model with interactions (m1)
+```
+
+```{r}
+f <- ((summary(m1)$r.squared - summary(m2)$r.squared) * (nrow(z) - 3 - 1))/((1 -
+    summary(m1)$r.squared) * (3 - 2))
+f
+```
+
+```{r}
+p <- 1 - pf(f, df1 = 3 - 2, df2 = nrow(z) - 3, lower.tail = TRUE)  # df1 = q-p, df2 = n-q
+p
+```
+
+```{r}
+anova(m3, m2, test = "F")  # compares the age only model (m3) to the age + gender model (m2)
+```
+
+```{r}
+f <- ((summary(m2)$r.squared - summary(m3)$r.squared) * (nrow(z) - 2 - 1))/((1 -
+    summary(m2)$r.squared) * (2 - 1))
+f
+```
+
+```{r}
+p <- 1 - pf(f, df1 = 2 - 1, df2 = nrow(z) - 2, lower.tail = TRUE)  # df1 = q-p, df2 = n-q
+p
+```
+
+## Forward Selection
+```{r}
+m0 <- lm(data = z, height ~ 1)
+summary(m0)
+```
+
+```{r}
+add1(m0, scope = . ~ . + age + weight + zombies_killed + years_of_education,
+    test = "F")
+```
+
+```{r}
+m1 <- update(m0, formula = . ~ . + weight)
+summary(m1)
+```
+
+```{r}
+add1(m1, scope = . ~ . + age + weight + zombies_killed + years_of_education,
+    test = "F")
+```
+
+```{r}
+m2 <- update(m1, formula = . ~ . + age)
+summary(m2)
+```
+
+```{r}
+add1(m2, scope = . ~ . + age + weight + zombies_killed + years_of_education,
+    test = "F")
+```
+
+```{r}
+summary(m2)
+```
+
+## Backward Selection
+```{r}
+m0 <- lm(data = z, height ~ age + weight + zombies_killed + years_of_education)
+summary(m0)
+```
+
+```{r}
+drop1(m0, test = "F")
+```
+
+```{r}
+m1 <- update(m0, . ~ . - years_of_education)
+summary(m1)
+```
+
+```{r}
+drop1(m1, test = "F")
+```
+
+```{r}
+m2 <- update(m1, . ~ . - zombies_killed)
+summary(m2)
+```
+
+```{r}
+drop1(m2, test = "F")
+```
+
+```{r}
+summary(m2)
+```
+
+## Model Selection Using AIC
+```{r}
+library(MASS)
+stepAIC(m0, direction = "both")
+```
+
+```{r}
+library(AICcmodavg)
+print(aictab(list(m0, m1, m2), c("m0", "m1", "m2")), LL = FALSE)
+```
