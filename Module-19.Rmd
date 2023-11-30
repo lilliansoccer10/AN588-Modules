@@ -1,0 +1,341 @@
+---
+title: "Module 19"
+author: "Lillian Holden"
+date: "2023-11-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#install.packages("statnet")
+library(statnet)
+```
+## Loading Data
+```{r}
+library(curl)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/bioanth-stats/module-F23-Group1/AnzaEtAl_2021_ggr_weighted.csv")
+bonobo_ggr_edgelist <- read.csv(f, header = TRUE, sep = ",")
+head(bonobo_ggr_edgelist) # data about bonobos' GG rubbing interactions
+```
+
+```{r}
+q <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/bioanth-stats/module-F23-Group1/AnzaEtAl_2021_grooming_weighted.csv")
+bonobo_groom_edgelist <- read.csv(q, header = TRUE, sep = ",")
+head(bonobo_groom_edgelist) # data about bonobos' grooming interactions
+```
+- What are we looking at in these data sets?
+- Who are the actors (also known as senders) vs the receivers?
+- In the first 6 rows we are looking at for each data set, who has the most weighted relationship?
+
+- What does this mean?
+
+Answer in class: each row is an edge, each row (edge) has a weight (can be also minutes, whatever you want it to be), nodes are each category, individuals are bonobo
+
+For directed networks, rows indicate the starting node, and columns indicate the receiving node. Undirected networks are symmetric matrices around the diagonal
+
+## Node-Level Variables
+```{r}
+j <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/bioanth-stats/module-F23-Group1/AnzaEtAl_2021_attributes.csv")
+bonobo_attribute <- read.csv(j, header = TRUE, sep = ",")
+bonobo_attribute
+```
+highest ranking is j 
+
+```{r}
+bonobo_ggr_net <- as.network.data.frame(bonobo_ggr_edgelist) # turns GG rubbing edge list into a GG rubbing network
+bonobo_groom_net<-as.network.data.frame(bonobo_groom_edgelist) # turns grooming edge list into a grooming network
+
+bonobo_ggr_net %v% "rank" <- bonobo_attribute$rank #adds rank variable to GG rubbing network as a vertex attribute
+bonobo_ggr_net %v% "age" <- bonobo_attribute$age #adds age variable to GG rubbing network as a vertex attribute
+bonobo_ggr_net %v% "group" <- bonobo_attribute$group #adds group variable to GG rubbing network as a vertex attribute
+bonobo_groom_net %v% "rank" <- bonobo_attribute$rank #adds rank variable to grooming network as a vertex attribute
+bonobo_groom_net %v% "group" <- bonobo_attribute$group #adds group variable to grooming network as a vertex attribute
+```
+v is for vertices -- another name for nodes
+```{r}
+summary(bonobo_ggr_net)
+```
+
+## Visualizing social network data
+````{r}
+par(mfrow = c(1, 2))
+plot(bonobo_ggr_net, label = "vertex.names", main="GG rubbing") # left plot
+box(col = "black")
+
+plot(bonobo_ggr_net, vertex.col = "rank", label = "vertex.names", main="GG rubbing", vertex.cex = 2, edge.label = "GGR.Weight", edge.label.cex = 0.6) # right plot
+box(col = "black")
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(bonobo_groom_net, label = "vertex.names", main="Grooming") 
+box(col = "black")
+
+plot(bonobo_groom_net, vertex.col = "rank", label = "vertex.names", main="Grooming", vertex.cex = 2, edge.label = "weight", edge.label.cex = 0.6)
+box(col = "black")
+```
+
+## Quadratic Assignment Procedure (QAP)
+### 1. Correlation
+Do bonobos who groom each other correlate with bonobos who GG rub with one another?
+
+What is our null hypothesis and alternative hypothesis in this question?
+```{r}
+gcor(bonobo_ggr_net, bonobo_groom_net)
+```
+
+```{r}
+set.seed(123)
+qap_cor <- qaptest(list(bonobo_ggr_net, bonobo_groom_net), # include both network objects in a list
+                gcor, # the function you're using is correlation between networks (gcor) 
+                g1=1, # use first graph in the list (in this case the GG rubbing network)
+                g2=2, # use second graph in the list (in this case the groom network)
+                reps = 1000) # number of permutations to run (1000 is actually the default)
+summary(qap_cor)
+```
+```{r}
+plot(qap_cor)
+```
+
+## Linear/Multiple Regression
+```{r}
+nodes <- length(bonobo_attribute$actor) # number of nodes in the data set
+rank <- bonobo_ggr_net %v% "rank" # a vector of the node-level variable we are interested in
+
+rank_sending <- matrix(data = NA, nrow = nodes, ncol = nodes) # create empty matrix to be filled for senders
+
+for (i in 1:nodes){ # for 1 through the number of nodes in the data set
+rank_sending[i,] <- rep(rank[i], nodes)} # the rank of each actor is repeated over entire ROW of matrix
+rank_sending
+```
+
+```{r}
+rank_receiving <- matrix(data = NA, nrow = nodes, ncol = nodes) # empty matrix for receivers
+
+for (i in 1:nodes){ # for 1 through the number of nodes in the data set
+rank_receiving[,i] <- rep(rank[i], nodes)} # the rank of each receiver is repeated over entire COLUMN of matrix
+rank_receiving
+```
+
+```{r}
+set.seed(123)
+lrqap <- netlm(bonobo_ggr_net, # response variable is a network object with a weighted adjacency matrix
+                list(rank_sending)) # list of predictor variables as network or matrix objects
+summary(lrqap)
+```
+```{r}
+set.seed(123)
+lrqap2 <- netlm(bonobo_ggr_net, # response variable is a network object with a weighted adjacency matrix
+                list(rank_receiving)) # list of predictor variables as network or matrix objects
+summary(lrqap2)
+```
+
+```{r}
+set.seed(123)
+mrqap <- netlm(bonobo_ggr_net, # response variable is a network object with a weighted adjacency matrix
+                list(rank_sending, rank_receiving, bonobo_groom_net)) # list of all predictor variables as network or matrix objects
+
+summary(mrqap)
+```
+
+## Logistic regression
+```{r}
+set.seed(123)
+logqap <- netlogit(bonobo_ggr_net, # response variable is a network object
+                  list(rank_receiving, rank_sending), # list of all predictor variables as network or matrix objects
+                  reps = 1000) # number of draws for quantile estimation, 1000 reps is the default
+summary(logqap)
+```
+
+## Homophily
+```{r}
+group <- bonobo_ggr_net %v% "group" # first create a vector giving the group of each node
+group_homophily <- outer(group, group, FUN = "==") # shows us whether each combination of terms in vector group is the same (TRUE) or different (FALSE)
+group_homophily 
+```
+
+```{r}
+set.seed(123)
+logqap2 <- netlogit(bonobo_ggr_net,
+                  list(rank_receiving, rank_sending, group_homophily),
+                  reps = 1000)
+summary(logqap2)
+```
+
+## Spider Monkey Social Networks
+```{r}
+spmonkey_dat <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/bioanth-stats/module-F23-Group1/spidermonkey_beh_edgelist.csv")
+spmonkey_el <- read.csv(spmonkey_dat)
+head(spmonkey_el)
+```
+
+```{r}
+unique(spmonkey_el$Beh) #subsetting the column for proximity types
+```
+
+```{r}
+mating_spmonkey <- spmonkey_el[spmonkey_el$Beh == "mating",] #making a separate data frame for mating
+mating_spmonkey <- mating_spmonkey[,-c(2,4)] #removing unnecessary column data, we'll add back this "Mins" data as edge attributes later 
+sp_mating_net <- as.network(mating_spmonkey, matrix.type = "edgelist", directed = TRUE)
+plot(sp_mating_net, label = "vertex.names", main="Spider Monkey Mating Network")
+```
+
+```{r}
+sp_attr <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/bioanth-stats/module-F23-Group1/spidermonkey_attributes.csv")
+sp_attr <- read.csv(sp_attr)
+head(sp_attr)
+```
+
+```{r}
+sp_attr$age[sp_attr$age == "infant"] <- 1 #assigning a numeric value to each life history stage
+sp_attr$age[sp_attr$age == "juvenile"] <- 2
+sp_attr$age[sp_attr$age == "adult"] <- 3
+sp_attr$age <- as.numeric(sp_attr$age)
+class(sp_attr$age) #confirming the age attribute is coming up as a numeric class
+```
+
+```{r}
+sp_attr$sex[sp_attr$sex == "female"] <- 0 #assigning a numeric value to each sex
+sp_attr$sex[sp_attr$sex == "male"] <- 1
+sp_attr$sex <- as.numeric(sp_attr$sex)
+class(sp_attr$sex) #confirming the sex attribute is coming up as a numeric class
+```
+
+```{r}
+#next we need to assign the node attributes to the mating network
+sp_mating_net %v% "sex" <- sp_attr$sex #adds sex as node attribute
+sp_mating_net %v% "age" <- sp_attr$age #adds age as node attribute
+sp_mating_net %v% "repr" <- sp_attr$Repr_status #adds reproductive status as a node attribute
+```
+
+```{r}
+sp_mating_net %e% "time" <- spmonkey_el[spmonkey_el$Beh == "mating",]$Mins 
+summary(sp_mating_net) #can summarize the network like we did for the bonobo GG rubbing network
+```
+
+```{r}
+play_spmonkey <- spmonkey_el[spmonkey_el$Beh == "play",][,-c(2,4)] #making a separate data frame for play behavior
+sp_play_net_unweighted <- as.network(play_spmonkey, matrix.type = "edgelist", directed = TRUE, weighted=FALSE)
+plot(sp_play_net_unweighted, label = "vertex.names", main="Spider Monkey Play Network")
+```
+
+```{r}
+# Adding network and edge attributes to network
+sp_play_net_unweighted %v% "sex" <- sp_attr$sex #adds sex as node attribute
+sp_play_net_unweighted %v% "age" <- sp_attr$age #adds age as node attribute
+sp_play_net_unweighted %v% "repr" <- sp_attr$Repr_status #adds reproductive status as node attribute
+```
+
+```{r}
+groom_spmonkey <- spmonkey_el[spmonkey_el$Beh == "groom",][,-c(2,4)] #making a separate data frame for grooming behavior
+sp_groom_net <- as.network(groom_spmonkey, matrix.type = "edgelist", directed = TRUE, loops = TRUE)
+plot(sp_groom_net, label = "vertex.names", main="Spider Monkey Grooming Network")
+```
+
+```{r}
+# Adding network and edge attributes to the network
+sp_groom_net %v% "sex" <- sp_attr$sex #adds sex as node attribute
+sp_groom_net %v% "age" <- sp_attr$age #adds age as node attribute
+sp_groom_net %v% "repr" <- sp_attr$Repr_status #adds reproductive status as a node attribute
+
+# Let's add the "Mins" from the initial spmonkey edgelist as edge weights
+sp_groom_net %e% "time" <- spmonkey_el[spmonkey_el$Beh == "groom",]$Mins 
+```
+
+```{r}
+contact_spmonkey <- spmonkey_el[spmonkey_el$Beh == "In contact",][,-c(2,4)] #making a separate data frame for contact
+sp_contact_net <- as.network(contact_spmonkey, matrix.type = "edgelist", directed = TRUE, loops = TRUE)
+plot(sp_contact_net, label = "vertex.names", main="Spider Monkey Contact Network")
+```
+
+```{r}
+# Adding network and edge attributes to the network
+sp_contact_net %v% "sex" <- sp_attr$sex #adds sex as node attribute
+sp_contact_net %v% "age" <- sp_attr$age #adds age as node attribute
+sp_contact_net %v% "repr" <- sp_attr$Repr_status #adds reproductive status as a node attribute
+
+# Let's add the "Mins" from the initial spmonkey edgelist as edge weights
+sp_contact_net %e% "time" <- spmonkey_el[spmonkey_el$Beh == "In contact",]$Mins
+```
+
+## Correlation
+```{r}
+set.seed(123)
+
+# get the correlation value
+gcor(sp_groom_net, sp_contact_net)
+```
+
+```{r}
+# is it significant?
+qap_cor <- qaptest(list(sp_groom_net, sp_contact_net), # include both network objects in a list
+                gcor, # the function you're using is correlation between networks (gcor) 
+                g1=1, # use first graph in the list
+                g2=2, # use second graph in the list
+                reps = 1000) # number of permutations to run
+summary(qap_cor)
+```
+
+```{r}
+plot(qap_cor)
+```
+
+## Linear regression
+```{r}
+nodes <- length(sp_attr$ID) # the number of nodes in the data set
+age <- sp_groom_net %v% "age" # a vector of the node-level variable we are interested in
+
+age_sending <- matrix(data = NA, nrow = nodes, ncol = nodes) #create an empty matrix to be filled
+
+for (i in 1:nodes){ # for 1 through the number of nodes in the data set
+age_sending[i,] <- rep(age[i], nodes)} # The age of each actor is repeated over entire ROW of matrix
+head(age_sending)
+```
+
+```{r}
+age_receiving <- matrix(data = NA, nrow = nodes, ncol = nodes)
+
+for (i in 1:nodes){ # for 1 through the number of nodes in the data set
+age_receiving[,i] <- rep(age[i], nodes)} # The age of each actor is repeated over entire COLUMN of matrix
+head(age_receiving)
+```
+
+```{r}
+set.seed(123)
+lrqap.sp <- netlm(sp_groom_net, # response variable is a network object with a weighted adjacency matrix
+                list(age_sending)) # list of all predictor variables as network objects or matrix objects
+
+summary(lrqap.sp)
+```
+
+## Logistic Regression
+```{r}
+nodes <- 16 # the number of nodes in the data set
+sex <- sp_play_net_unweighted %v% "sex" # a vector of the node-level variable we are interested in
+
+sex_sending <- matrix(data = NA, nrow = nodes, ncol = nodes) #create an empty matrix to be filled
+
+for (i in 1:nodes){ # for 1 through the number of nodes in the data set
+sex_sending[i,] <- rep(sex[i], nodes)} # sex of each actor repeated over entire ROW of matrix
+head(sex_sending)
+```
+
+```{r}
+sex_receiving <- matrix(data = NA, nrow = nodes, ncol = nodes)
+
+for (i in 1:nodes){ # for 1 through the number of nodes in the data set
+sex_receiving[,i] <- rep(sex[i], nodes)} # sex of each actor repeated over entire COLUMN of matrix
+head(sex_receiving)
+```
+
+```{r}
+set.seed(123)
+lrqap <- netlogit(sp_play_net_unweighted, # response variable is a network object with an unweighted adjacency matrix
+                  list(sex_receiving, sex_sending), # list of predictor variables as network or matrix objects
+                  reps = 1000) 
+summary(lrqap)
+```
+
