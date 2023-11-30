@@ -15,7 +15,7 @@ library(tidyverse)
 
 ```{r}
 library(coda)
-install.packages("rjags")
+#install.packages("rjags")
 library(rjags)
 ```
 
@@ -100,3 +100,229 @@ fit <- jags.model(textConnection(jags_model),
                data = jags_data, inits = jags_init, 
                n.chains = 2, n.adapt = n_adapt) # what do the chains do?
 ```
+```{r}
+# this saves the model as a variable
+
+fit_samples <- coda.samples(fit, c("lambda1", "lambda2"), n.iter = n_iter) %>% 
+  window(start = n_burnin + n_adapt) # let's get our samples <3
+```
+
+```{r}
+plot(window(fit_samples), density = FALSE) # this is a trace plot (tells us where we're randomly walking)
+```
+
+```{r}
+plot(window(fit_samples), trace = FALSE) # this is a density plot (you know what this is!)
+```
+
+```{r}
+summary(window(fit_samples)) # these are our samples
+```
+
+```{r}
+fit_samples <- as.data.frame(as.array(fit_samples)) # got to make a df
+
+acf(fit_samples$lambda1.1)
+```
+
+```{r}
+acf(fit_samples$lambda1.2)
+```
+
+```{r}
+# let's do another diagnostic, when we're walking around, we need to guarantee that samples, from say 10 samples ago, aren't influencing the current sample. ACF plot! 
+acf(fit_samples$lambda2.1)
+```
+
+```{r}
+acf(fit_samples$lambda2.2)
+```
+
+```{r}
+# all of these look great! autocorrelation between sample 1 and sample 3 is basically 0, good model (you want your model to be between the blue dotted lines I'd say before lag 10)
+
+# we've got two chains, so we need to concatenate our dudes
+fit_samples <- data.frame(homerange = 
+                            c(fit_samples[, "lambda1.1"], 
+                              fit_samples[, "lambda1.2"]),
+                          ppt = 
+                            c(fit_samples[, "lambda2.1"],
+                                  fit_samples[, "lambda2.2"]))
+```
+
+```{r}
+colors <- c("Homerange" = "orange3", "Playback point transect" = "steelblue3")
+# let's put our two samples against each other
+fit_samples %>% ggplot() + # ggplot them
+  geom_density(aes(x = homerange, fill = "Homerange", alpha = 0.5)) +
+  geom_density(aes(x = ppt, fill = "Playback point transect", alpha = 0.5)) +
+  xlab("Lambda Samples") +
+  ggtitle("Posterior distributions of Homerange\nand Playback point transect lambdas") +
+  scale_fill_manual(values = colors) +
+  geom_vline(xintercept = 15, linetype = 3) + 
+  guides(alpha="none")
+```
+
+```{r}
+# what percentage are less than 15?
+ppt_credinterval <- quantile(fit_samples$ppt, probs = c(0.025, 0.975)); ppt_credinterval
+```
+
+```{r}
+# the probability lambda < 15
+ppt_problessthan <- sum(fit_samples$ppt < 15)/length(fit_samples$ppt); ppt_problessthan
+```
+
+```{r}
+# credible interval
+hr_credinterval <- quantile(fit_samples$homerange, probs = c(0.025, 0.975)); hr_credinterval
+```
+
+```{r}
+# the probability lambda > 15
+hr_probmorethan <- sum(fit_samples$homerange > 15)/length(fit_samples$homerange); hr_probmorethan
+```
+
+```{r}
+diff_data <- fit_samples$homerange - fit_samples$ppt # subtract the two samples, then create a credible interval!
+diffr_credinterval <- quantile(diff_data, probs = c(0.025, 0.975)); diffr_credinterval
+```
+
+```{r}
+# okay but what's the probability homerange estimates more than ppt?
+diffr_prop <- sum(diff_data > 0)/length(diff_data); diffr_prop
+```
+
+```{r}
+jags_data <- list(n_homerange = n_homerange, n_ppt = n_ppt, 
+                  homerange = titi_homerange, ppt = titi_ppt)
+jags_init <- list(lambda1 = homerange_init, 
+                  lambda2 = ppt_init)
+```
+
+```{r}
+set.seed(812) # feel free to change my seed <3
+# we first need to make the model
+jags_model <- "model{
+  # likelihood
+  for(i in 1:n_homerange){
+  homerange[i] ~ dpois(lambda1)
+  }
+  for (i in 1:n_ppt){
+  ppt[i] ~ dpois(lambda2)
+  }
+  
+  # prior
+  lambda1 ~ dnorm(15, 1/9)
+  lambda2 ~ dnorm(15, 1/9)
+}"
+
+fit_norm <- jags.model(textConnection(jags_model),
+               data = jags_data, inits = jags_init, 
+               n.chains = 2, n.adapt = n_adapt) # what do the chains do?
+```
+
+```{r}
+# this saves the model as a variable
+
+fit_samples_norm <- coda.samples(fit_norm, c("lambda1", "lambda2"), n.iter = n_iter) %>% 
+  window(start = n_burnin + n_adapt) # let's get our samples <3
+```
+
+```{r}
+plot(window(fit_samples_norm), density = FALSE) # this is a trace plot (tells us where we're randomly walking)
+```
+
+```{r}
+plot(window(fit_samples_norm), trace = FALSE) # this is a density plot (you know what this is!)
+```
+
+```{r}
+summary(window(fit_samples_norm)) # these are our samples
+```
+
+```{r}
+fit_samples_norm <- as.data.frame(as.array(fit_samples_norm)) # got to make a df
+
+acf(fit_samples_norm$lambda1.1) # notice how we have a bit more lag, sample i is influencing i+1 a bit more than w the poisson-gamma
+```
+
+```{r}
+acf(fit_samples_norm$lambda1.2)
+```
+
+```{r}
+# let's do another diagnostic, when we're walking around, we need to guarantee that samples, from say 10 samples ago, aren't influencing the current sample. ACF plot! 
+acf(fit_samples_norm$lambda2.1)
+```
+
+```{r}
+acf(fit_samples_norm$lambda2.2)
+```
+
+```{r}
+# all of these look great! autocorrelation between sample 1 and sample 3 is basically 0, good model (you want your model to be between the blue dotted lines I'd say before lag 10)
+
+# we've got two chains, so we need to concatenate our dudes
+fit_samples_norm <- data.frame(homerange = 
+                            c(fit_samples_norm[, "lambda1.1"], 
+                              fit_samples_norm[, "lambda1.2"]),
+                          ppt = 
+                            c(fit_samples_norm[, "lambda2.1"],
+                                  fit_samples_norm[, "lambda2.2"]))
+```
+
+```{r}
+colors <- c("Gamma" = "orange3", "Normal" = "steelblue3")
+# let's put our two samples against each other
+ggplot() + # ggplot them
+  geom_density(aes(x = fit_samples$homerange, fill = "Gamma", alpha = 0.5)) +
+  geom_density(aes(x = fit_samples_norm$homerange, fill = "Normal", alpha = 0.5)) +
+  xlab("Lambda Samples") +
+  ggtitle("Posterior distributions of Homerange\nfor Gamma and Normal Priors") +
+  scale_fill_manual(values = colors) +
+  geom_vline(xintercept = 15, linetype = 3) + 
+  guides(alpha="none")
+```
+
+```{r}
+ggplot() + # ggplot them
+  geom_density(aes(x = fit_samples$ppt, fill = "Gamma", alpha = 0.5)) +
+  geom_density(aes(x = fit_samples_norm$ppt, fill = "Normal", alpha = 0.5)) +
+  xlab("Lambda Samples") +
+  ggtitle("Posterior distributions of Playback point transect\nfor Gamma and Normal Priors") +
+  scale_fill_manual(values = colors) +
+  geom_vline(xintercept = 15, linetype = 3) + 
+  guides(alpha="none")
+```
+
+```{r}
+hr_normcredinterval <- quantile(fit_samples_norm$homerange, probs = c(0.025, 0.975)); hr_normcredinterval
+```
+
+```{r}
+# the probability lambda > 15
+hr_normprobmorethan <- sum(fit_samples_norm$homerange > 15)/length(fit_samples_norm$homerange);
+hr_normprobmorethan
+```
+
+```{r}
+ppt_normcredinterval <- quantile(fit_samples_norm$ppt, probs = c(0.025, 0.975)); ppt_normcredinterval
+```
+
+```{r}
+# the probability lambda < 15
+ppt_normprobmorethan <- sum(fit_samples_norm$ppt < 15)/length(fit_samples_norm$ppt);
+ppt_normprobmorethan
+```
+
+```{r}
+diff_data <- fit_samples_norm$homerange - fit_samples_norm$ppt # subtract the two samples, then create a credible interval!
+diffr_credinterval <- quantile(diff_data, probs = c(0.025, 0.975)); diffr_credinterval
+```
+
+```{r}
+# okay but what's the probability homerange estimates more than ppt?
+diffr_prop <- sum(diff_data > 0)/length(diff_data); diffr_prop
+```
+
