@@ -100,7 +100,7 @@ summary(qap_cor)
 plot(qap_cor)
 ```
 
-## Linear/Multiple Regression
+## 2. Linear/Multiple Regression
 ```{r}
 nodes <- length(bonobo_attribute$actor) # number of nodes in the data set
 rank <- bonobo_ggr_net %v% "rank" # a vector of the node-level variable we are interested in
@@ -141,7 +141,7 @@ mrqap <- netlm(bonobo_ggr_net, # response variable is a network object with a we
 summary(mrqap)
 ```
 
-## Logistic regression
+## 3. Logistic regression
 ```{r}
 set.seed(123)
 logqap <- netlogit(bonobo_ggr_net, # response variable is a network object
@@ -150,7 +150,7 @@ logqap <- netlogit(bonobo_ggr_net, # response variable is a network object
 summary(logqap)
 ```
 
-## Homophily
+## 4. Homophily
 ```{r}
 group <- bonobo_ggr_net %v% "group" # first create a vector giving the group of each node
 group_homophily <- outer(group, group, FUN = "==") # shows us whether each combination of terms in vector group is the same (TRUE) or different (FALSE)
