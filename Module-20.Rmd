@@ -9,3 +9,94 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+```
+
+```{r}
+library(coda)
+install.packages("rjags")
+library(rjags)
+```
+
+```{r}
+set.seed(812) # set seed, i'm a leo it's my birthday <3; feel free to change it up <3
+titi_ppt <- rpois(n = 7, lambda = 13.8) # "collect" data via playback point transect
+titi_homerange <- rpois(n = 7, lambda = 16) # "collect" data via homerange
+```
+
+```{r}
+# are these consistent with 15 groups?
+t.test(titi_homerange, alternative = "greater", mu = 15) # is homerange more than 15
+```
+
+```{r}
+t.test(titi_ppt, alternative = "less", mu = 15) # is ppt greater than 15
+```
+
+```{r}
+t.test(titi_homerange, titi_ppt)
+```
+
+```{r}
+# oi jags innit
+n_iter <- 20000 # we're going to generate 20000 samples
+n_burnin <- 5000 # we're going to throw 5000 samples away as the model gets comfy
+n_adapt <- 5000 # we're  going throw another 5000 samples away 
+# we're going to have a total of 10000 samples at the end of the data
+
+n_homerange <- length(titi_homerange) 
+n_ppt <- length(titi_ppt)
+# these just happen to both be 7 but good practice to differentiate
+
+# where do we want our model to start from?
+# it doesn't really matter but why not start at the mean?
+homerange_init <- mean(titi_homerange)
+ppt_init <- mean(titi_ppt)
+
+# note spoiler
+
+# JAGS hates normal R data, you need to make a separate list for **JAGS**  <3
+jags_data <- list(n_homerange = n_homerange, n_ppt = n_ppt, 
+                  homerange = titi_homerange, ppt = titi_ppt)
+jags_init <- list(lambda1 = homerange_init, 
+                  lambda2 = ppt_init) # oi jags innit
+```
+
+```{r}
+x <- seq(0, 30, by = 0.01)
+plot(x, dunif(x, min = 10, max = 20), type = "l", 
+     main = "Uniform?",
+     xlab = "Prior values",
+     ylab = "Probabilities")
+```
+
+```{r}
+x <- seq(0, 30, by = 0.01)
+plot(x, dnorm(x, mean = 15, sd = 3), type = "l", 
+     main = "Normal?",
+     xlab = "Prior values",
+     ylab = "Probabilities")
+```
+
+```{r}
+set.seed(812) # feel free to change my seed <3
+# we first need to make the model
+jags_model <- "model{
+  # likelihood
+  for(i in 1:n_homerange){
+  homerange[i] ~ dpois(lambda1)
+  }
+  for (i in 1:n_ppt){
+  ppt[i] ~ dpois(lambda2)
+  }
+  
+  # prior
+  lambda1 ~ dgamma(15, 1)
+  lambda2 ~ dgamma(15, 1)
+}"
+
+fit <- jags.model(textConnection(jags_model),
+               data = jags_data, inits = jags_init, 
+               n.chains = 2, n.adapt = n_adapt) # what do the chains do?
+```
