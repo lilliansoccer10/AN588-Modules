@@ -1,0 +1,326 @@
+---
+title: "Module 22"
+author: "Lillian Holden"
+date: "2023-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#install.packages("caret)
+#install.packages("rsample")
+#install.packages("caTools")
+#install.packages("ModelMetrics")
+library(caret)
+library(rsample)
+library(caTools)
+library(ModelMetrics)
+library(curl)
+```
+
+```{r}
+f <- curl("https://raw.githubusercontent.com/cbao2397/DataStorage/main/moremoreprocessedbut01.cleveland.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d) #loads in dataset
+```
+
+```{r}
+d <- na.omit(d)
+```
+
+```{r}
+library(rsample) #load in the necessary packages
+
+# Using base R for random sampling
+set.seed(123)  # for reproducibility of the random sample
+index_1 <- sample(1:nrow(d), round(nrow(d) * 0.6)) #indicates we are taking from dataset d, by row and rounding and the 0.6 shows we are taking a 60-40 split
+train_1 <- d[index_1, ] #creates our training set which we use for making the model
+test_1  <- d[-index_1, ] #creates our test set which we will test our final model against
+
+# Using caret package for random sampling
+set.seed(123)  # for reproducibility
+index_2 <- createDataPartition(d$age, p = 0.6, 
+                               list = FALSE) #let us sample by age
+train_2 <- d[index_2, ]
+test_2  <- d[-index_2, ]
+
+# Using rsample package for random sampling
+set.seed(123)  # for reproducibility
+split_1  <- initial_split(d, prop = 0.6)
+train_2  <- training(split_1)
+test_2  <- testing(split_1)
+```
+
+```{r}
+library(ggplot2) #load in package to plot our predictions for our models
+library(dplyr) #for transforming and interpreting our results later
+```
+
+```{r}
+model1 <- glm(num ~ age, family = "binomial", data = train_2)
+model2 <- glm(num ~ sex, family = "binomial", data = train_2)
+model3 <- glm(
+  num ~ age + sex,
+  family = "binomial", 
+  data = train_2
+  ) #uses multiple logistic regression to evaluate prediction by age AND sex
+model4 <- glm(data = train_2, num ~ age + sex + cp + trestbps + chol + restecg + thalach + exang + oldpeak + slope + ca + thal + fbs, family = "binomial") #this model tests all the features significance with num, which uses a selection of features like we learned in Module 17, to which we can work backwards by dropping variables (kind of like we did in model 3 only representing two features)
+```
+
+```{r}
+exp(coef(model1))
+```
+
+```{r}
+exp(coef(model2))
+```
+
+```{r}
+exp(coef(model3)) 
+```
+
+```{r}
+exp(coef(model4))
+```
+
+```{r}
+plot1 <- ggplot(data = model1, aes(x = age, y = num))
+plot1 <- plot1 + geom_point()
+plot1 <- plot1 + geom_smooth(method = "glm", formula = y ~ x)
+plot1 #gives our plot, which will show the points of fbs Yes/No with the line representing the predicted values associated with age
+```
+
+```{r}
+plot2 <- ggplot(data = model2, aes(x = sex, y = num))
+plot2 <- plot2 + geom_point()
+plot2 <- plot2 + geom_smooth(method = "glm", formula = y ~ x)
+plot2 #gives our plot, which will show the points of fbs Yes/No with the line representing the predicted values associated with sex
+```
+
+```{r}
+plot3 <- ggplot(data = model3, aes(x = age + sex, y = num))
+plot3 <- plot3 + geom_point()
+plot3 <- plot3 + geom_smooth(method = "glm", formula = y ~ x)
+plot3 #gives our plot, which will show the points of fbs Yes/No with the line representing the predicted values associated with age and sex
+```
+
+```{r}
+plot4 <- ggplot(data = model4, aes(x = age + sex + cp + trestbps + chol + restecg + thalach + exang + oldpeak + slope + ca + thal + fbs, y = num))
+plot4 <- plot4 + geom_point()
+plot4 <- plot4 + geom_smooth(method = "glm", formula = y ~ x)
+plot4 #gives our plot, which will show the points of fbs Yes/No with the line representing the predicted values associated with age and sex
+```
+
+```{r}
+p <- predict(model4, test_2, type = "response")
+summary(p)
+```
+
+```{r}
+cl <- ifelse(p > 0.5, "1", "0") #We want to categorize the prediction result (into 0 and 1). 
+testRef <- test_2$num
+t <- table(cl, testRef)
+confusionMatrix(t, positive='1') #Create a confusion matrix which will be returned in the result. 
+```
+
+```{r}
+library(caTools)
+caTools::colAUC(p, test_2[["num"]], plotROC = TRUE)
+```
+
+```{r}
+LL<-logLoss(model4) #don't have to specify actual and predicted values when a glmobject has been calculated
+LL
+```
+
+```{r}
+LL1<-logLoss(model1)
+LL2<-logLoss(model2)
+LL3<-logLoss(model3)
+LL4<-logLoss(model4)
+LL1
+```
+
+```{r}
+LL2
+LL3
+LL4
+```
+
+```{r}
+d$num<-as.factor(d$num)
+relevel(d$num, ref="0")
+```
+
+```{r}
+set.seed(123)
+train.control <- trainControl(method = "LOOCV") #setting the model to cross validate by leaving one out
+loomodel<-train(num~., data=d, method= "glm", family=binomial, trControl=train.control)
+print(loomodel)
+```
+
+```{r}
+set.seed(123)
+train.control <- trainControl(method = "cv", number = 10) #setting the model to cross validate and k=10
+kmodel<-train(num~., data=d, method= "glm", family=binomial, trControl=train.control)
+print(kmodel)
+```
+
+```{r}
+set.seed(123)
+train.control2 <- trainControl(method = "repeatedcv", number = 10, repeats = 3) #setting the model to repeatedly cross validate, k=10, and repeat three times
+repkmodel<-train(num~., data=d, method="glm", family = binomial, trControl=train.control2)
+print(repkmodel) 
+```
+
+### Challenge 1
+```{r}
+library(curl)
+x <- curl("https://raw.githubusercontent.com/cbao2397/DataStorage/main/wdbc10.csv")
+b <- read.csv(x, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(b) #loads in dataset
+```
+
+```{r}
+b <- na.omit(b)
+```
+
+```{r}
+library(caret)
+library(rsample) #load in the necessary packages
+
+# Using base R for random sampling
+set.seed(123)  # for reproducibility of the random sample
+index_1 <- sample(1:nrow(b), round(nrow(b) * 0.6)) #indicates we are taking from dataset d, by row and rounding and the 0.6 shows we are taking a 60-40 split
+train_1 <- b[index_1, ] #creates our training set which we use for making the model
+test_1  <- b[-index_1, ] #creates our test set which we will test our final model against
+
+# Using caret package for random sampling
+set.seed(123)  # for reproducibility
+index_2 <- createDataPartition(b$texture1, times = 1, p = 0.6, list = FALSE) #let us sample by texture1
+train_2 <- b[index_2, ]
+test_2  <- b[-index_2, ]
+
+# Using rsample package for random sampling
+set.seed(123)  # for reproducibility
+split_1  <- initial_split(b, prop = 0.6)
+train_2  <- training(split_1)
+test_2  <- testing(split_1)
+```
+
+```{r}
+library(ggplot2) #load in package to plot our predictions for our models
+library(dplyr) #for transforming and interpreting our results later
+model1 <- glm(Diagnosis ~ texture1, family = "binomial", data = train_2)
+model2 <- glm(Diagnosis ~ peri1eter1, family = "binomial", data = train_2)
+model3 <- glm(
+  Diagnosis ~ texture1 + peri1eter1,
+  family = "binomial", 
+  data = train_2
+  )
+```
+
+```{r}
+exp(coef(model1))
+```
+
+```{r}
+exp(coef(model2))
+```
+
+```{r}
+exp(coef(model3)) 
+```
+
+```{r}
+plot1 <- ggplot(data = model1, aes(x = texture1, y = Diagnosis))
+plot1 <- plot1 + geom_point()
+plot1 <- plot1 + geom_smooth(method = "glm", formula = y ~ x)
+plot1 #gives our plot, which will show the points of fbs Yes/No with the line representing the predicted values associated with texture1
+```
+
+```{r}
+plot2 <- ggplot(data = model2, aes(x = peri1eter1, y = Diagnosis))
+plot2 <- plot2 + geom_point()
+plot2 <- plot2 + geom_smooth(method = "glm", formula = y ~ x)
+plot2 #gives our plot, which will show the points of fbs Yes/No with the line representing the predicted values associated with perimeter
+```
+
+```{r}
+plot3 <- ggplot(data = model3, aes(x = texture1 + peri1eter1, y = Diagnosis))
+plot3 <- plot3 + geom_point()
+plot3 <- plot3 + geom_smooth(method = "glm", formula = y ~ x)
+plot3 #gives our plot, which will show the points of fbs Yes/No with the line representing the predicted values associated with texture1 and perimeter
+```
+
+```{r}
+model4 <- glm(Diagnosis ~ ., family = "binomial", data = train_2)
+```
+
+### Challenge 2
+```{r}
+p <- predict(model3, test_2, type = "response")
+summary(p)
+```
+
+```{r}
+cl <- ifelse(p > 0.5, "1", "0") #We want to categorize the prediction result (into 0 and 1). 
+testRef <- test_2$Diagnosis
+t <- table(cl, testRef)
+print(t)
+```
+
+```{r}
+caret::confusionMatrix(t, positive = '1') #Create a confusion matrix which will be returned in the result. 
+```
+
+```{r}
+caTools::colAUC(p, test_2[["Diagnosis"]], plotROC = TRUE)
+```
+
+#Challenge 3
+```{r}
+LL1 <-logLoss(model1)
+LL2 <-logLoss(model2)
+LL3 <-logLoss(model3)
+LL4 <-logLoss(model4)
+
+LL1
+```
+
+```{r}
+LL2
+LL3
+LL4
+```
+
+```{r}
+# Making sure the machine recognizes the binary nature of the data
+b$Diagnosis<-as.factor(b$Diagnosis)
+relevel(b$Diagnosis, ref="0")
+```
+
+```{r}
+set.seed(123)
+train.control <- trainControl(method = "LOOCV") #setting the model to cross validate by leaving one out
+loomodel2<-train(Diagnosis~., data=b, method= "glm", family=binomial, trControl=train.control)
+print(loomodel2)
+```
+
+```{r}
+set.seed(123)
+train.control <- trainControl(method = "cv", number = 10 )
+kmodel2 <- train(Diagnosis~., data = b, method = 'glm', trControl = train.control, family = "binomial")
+print(kmodel2)
+```
+
+```{r}
+set.seed(123)
+train.control2 <- trainControl(method = "repeatedcv", number = 10, repeats = 3) #setting the model to repeatedly cross validate, k=10, and repeat three times
+repkmodel2<-train(Diagnosis~., data=b, method="glm", family = binomial, trControl=train.control2)
+print(repkmodel2)
+```
+
