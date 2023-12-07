@@ -1,0 +1,195 @@
+---
+title: "Module 23"
+author: "Lillian Holden"
+date: "2023-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+install.packages("warbleR")
+install.packages("bioacoustics")
+install.packages("tools")
+install.packages("randomForest")
+install.packages("viridis")
+library(warbleR)
+library(bioacoustics)
+library(tools)
+library(randomForest)
+# Unfortunately, ohun is currently under policy violation, so for the time being we are using an archived version. We expect this library to be unarchived after investigation.
+url <- "https://cran.r-project.org/src/contrib/Archive/ohun/ohun_1.0.0.tar.gz"
+install.packages(url, type="source", repos=NULL)
+library(ohun)
+library(viridis)
+```
+
+```{r}
+# pulling all Strepera versicolor calls without downloading locally
+df1 = query_xc(qword ='Strepera versicolor type:call cnt:"Australia"', download = FALSE)
+
+# Filter by type   
+df1 = df1[df1$Vocalization_type=="call",] #filtering by only calls
+df1 = df1[df1$Quality=="A",] #a type quality
+df1 = df1[1:9,]#takes the first 9 mp3 files 
+
+# Download data to working directory
+query_xc(X = df1, download = TRUE, path = getwd())
+```
+
+```{r}
+# getwd() gets our current working directory and file.path() combines getwd() and "mgr.wav" into a file path format. 
+wav <- read_audio(file.path(getwd(), "mgr.wav"))
+
+# Say you have a file saved on your Desktop, your code might look a little like this:
+# wav <- read_audio(file.path("~/Desktop", "mgr.wav"))
+```
+
+```{r}
+# Read just one file!
+STREPV <- read_audio(file.path(getwd(), "Strepera-versicolor-571957.mp3"))
+STREPV
+```
+
+```{r}
+# Read all the files in your current directory!
+read_all_mp3 <- function(){
+  # List all mp3 files in current directory
+  mp3_files = list.files(path=".", pattern=".mp3", all.files=TRUE, full.names=TRUE)
+  audio_list <- list()
+  # Append all the files a paths to a single list named audio_list
+  for(files in mp3_files) {
+    curr_file_path <- read_audio(file.path(files))
+    audio_list <- append(audio_list, curr_file_path)
+  }
+  return(audio_list)
+}
+
+read_all_mp3()
+```
+
+```{r}
+# First you call your wave audio file that we converted previously:
+plot(STREPV)
+```
+
+```{r}
+# Now let's zoom in on the first audio spike: 
+plot(STREPV, xlim = c(3, 5)) # xlim is indicating the time limits to narrow the field of analysis
+```
+
+```{r}
+ # Reads stereo audio and converts it into a wave object. 
+STREPV2 <- read_audio(file.path(getwd(), "Strepera-versicolor-743906.mp3")) 
+
+# Displays wave object information. You can see clearly here that STREPV2 is a stereo wave object
+STREPV2
+```
+
+```{r}
+# Now let's plot it!
+plot(STREPV2)
+```
+
+```{r}
+# First let's look at the parameters within spectrogram:
+?spectro()
+```
+
+```{r}
+# Tick indicates the frequency tick marks. We are displaying from 1 to 20 khz by 1khz steps. Different animals may need different frequencies so be sure to check that you are display the correct range. 
+ticks <- c(from = 1000, to = 20000, by = 1000)
+
+# Specify the time limits on the X-axis in seconds (s)
+temp_slice <- c(from = 1, to = 10)
+
+spectro(STREPV, tlim = temp_slice, FFT_size = 512, ticks_y = ticks) # sets the y axis labeling, in Hz, so its 1 kHz to 100 kHz, in 1 kHz interval
+```
+
+```{r}
+# First let's look at the parameters:
+?fspec
+
+# Now graph!
+image(fspec(STREPV, tlim = temp_slice, rotate = TRUE))
+```
+
+```{r}
+# blob_detection
+?blob_detection
+BD <- blob_detection(
+  STREPV, #Waveform of the audio file made
+  time_exp = 1, #Time expansion factor, 1 represents real-time
+  min_dur = 20, #Min duration of the threshold, in ms
+  max_dur = 2000,  #Max duration of the threshold, in ms, based on the plot, 1500 ms is the average length of the bird's call, we'll set the max length to be 2 seconds to be safe
+  min_area = 85, #Minimum number of pixels in the area of the audio event. This can be adjusted to filter more sounds out.
+  min_TBE = 1, #Min window between 2 audio events
+  max_TBE = 25000, #Max window between audio events, we don't want to exclude any noises so we can set it to a high measurement
+  LPF = 6000, #Low-Pass Filter. Frequencies above the cutoff are not included. Based on average bird call frequency.
+  HPF = 1000, #High-Pass Filter. Frequencies below the cutoff are not included. Based on average bird call frequency.
+  FFT_size = 512, #Size of the Fast Fourier Transform (FFT) window, essentially the "smoothness" of frequency changes
+  FFT_overlap = 0.875, #Percentage of overlap between two FFT windows
+  blur = 3, #Gaussian smoothing function for blurring the spectrogram of the audio event to reduce image noise
+  spectro_dir = file.path(getwd(), "Spectros"), #Path to the filtered spectrogram png files used in the HTML
+  time_scale = 1, #Time resolution of the spectrogram in milliseconds per pixel.
+  ticks = c(1000, 20000, 1000), #Sets y-axis min, max, and interval width
+  acoustic_feat = FALSE
+)
+BD
+```
+
+```{r}
+# Threshold_detection
+?threshold_detection
+TD <- threshold_detection(
+  STREPV, 
+  threshold = 12, #sets the sensitivity of the event, compared to the SNR(in dB, Lower the threshold for a noisier environment(low SNR); a too low or too high sensitivity may collect too many signals or not enough)
+  time_exp = 1,
+  min_dur = 20,
+  max_dur = 2000, 
+  min_TBE = 1, 
+  max_TBE = 25000, 
+  LPF = 6000, 
+  HPF = 1000, 
+  start_thr = 60, #start threshold for an audio event, 20dB is recommended for birds
+  end_thr = 80, #end threshold for an audio event, 30dB is recommended for birds
+  SNR_thr = 12, #SNR threshold (dB) at which the extraction of the audio event stops, 8dB is recommended for birds.
+  angle_thr = 170, #Angle threshold at which the audio event extraction stops.
+  duration_thr = 2000, #Maximum duration threshold in milliseconds (ms) after which the monitoring of the background noise is resumed.
+  NWS = 200, #Length of time used for background noise estimation in the recording (ms)
+  spectro_dir = file.path(getwd(), "Spectros"), 
+  time_scale = 1, # Time resolution of the spectrogram in milliseconds (ms) per pixel (px).
+  ticks = c(1000, 20000, 1000), #Sets y-axis min, max, and interval width
+  acoustic_feat = FALSE
+)
+TD
+```
+
+```{r}
+# Let's look at the parameters of the function first
+?auto_detec
+detection <- auto_detec(threshold = 12,
+ssmooth = 300, # 'smoothens' spectrogram
+bp = c(1, 6), # lower and upper limits of a frequency bandpass filter (in kHz)
+wl = 300, # Window used internally for bandpass filtering
+path = getwd())
+```
+
+```{r}
+label_spectro(wave = STREPV, #Wave object
+  detection = detection[detection$sound.files == "Strepera-versicolor-571957.mp3", ], #Data frame or 'selection.table' with the detection
+  hop.size = 10, #Time window duration (in ms).
+  ovlp = 50, #% overlap between two consecutive windows
+  flim = c(1, 10), #Frequency limits
+  fastdisp=TRUE) #Faster display of model
+```
+
+### Challenge 
+Record an audio file of you saying something (around 30 seconds!)
+Transfer that file onto your laptop. Save it wherever you’d like!
+Read in the mp3 file.
+Plot the spectrogram from 10-20 seconds of the audio file.
+Run a detection algorithm on your file and plot the detection results.
+Try this yourself first! When done, check out what we came up with by hitting the “Show” button.
