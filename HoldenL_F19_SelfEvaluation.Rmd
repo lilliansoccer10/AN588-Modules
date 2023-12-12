@@ -1,60 +1,38 @@
 ---
 title: "AN/BI 588: End-of-Semester Self Evaluation"
-author: "Christopher A Schmitt"
-date: "August 17, 2023"
+author: "Lillian Holden"
+date: "Due December 14th, 2023"
 output: 
   rmarkdown::html_document:
     theme: cosmo
 ---
 
-***
 
-### [Course Overview](https://fuzzyatelin.github.io/bioanth-stats/overview.html)
-### [Course Outline](https://fuzzyatelin.github.io/bioanth-stats/outline.html)
-### [Modules](https://fuzzyatelin.github.io/bioanth-stats/modules.html)
-### [Assignments](https://fuzzyatelin.github.io/bioanth-stats/assignments.html)
-### [Resources](https://fuzzyatelin.github.io/bioanth-stats/resources.html)
-### [Policies](https://fuzzyatelin.github.io/bioanth-stats/policies.html)
-### [Insurmountable Coding Problems](https://fuzzyatelin.github.io/bioanth-stats/studentproblems.html)
 
-***
+<center><font size="+2"><b>Phew ... We Made It!</b></font></center><br>
 
-<center>
-
-<font size="+2"><b>Sashay... Away.</b></font></center><br>
-
-<center><p><img src="https://media.giphy.com/media/RPdLHpiOnL2pO/giphy.gif" style="border:5px solid black"></p>
+<center><p><img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/31174a30-d884-4729-a778-11f3328b381a/d79r3xh-3a9c1b00-af98-4e2c-9f0e-5a947af5b59f.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzMxMTc0YTMwLWQ4ODQtNDcyOS1hNzc4LTExZjMzMjhiMzgxYVwvZDc5cjN4aC0zYTljMWIwMC1hZjk4LTRlMmMtOWYwZS01YTk0N2FmNWI1OWYuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.ycN6ayZ40RpgOJgKxSFUahVXQpx-2sY0gaYZKWFdcw4" style="border:5px solid black"></p>
 </center><br>  
 
-<center>
-The following self evaluation is meant to guide you through a reflection on what you put into this course, and also what you got out of it in return. Your self evaluation is *not* the place to criticize, evaluate, or thank the instructor (we will have had many thorough conversations about that in class, and formal evaluations on the last day of class). This is about *you*. Unless otherwise noted, please answer each question in no more than *eight* sentences. At the end, I ask you to assign yourself a grade that you think is both a fair and honest reflection of your performance in the class given what was asked of you.
-<br><br>
-Whether I agree with your assessment or not, I will schedule a time for us to discuss your self-assessment. In this discussion, we will come to an agreement regarding your final grade reflecting the criteria in the [Course Overview](https://fuzzyatelin.github.io/bioanth-stats/overview.html) and as outlined below. 
-
-</center>
-***
-
-## Instructions
-
-***
-
-Please download this Markdown file (`selfevaluation.Rmd`) from my GitHub site (in the `fuzzyatelin.github.io/bioanth-stats/` folder) and answer the appropriate questions in the spaces provided. Once you've knitted the final file, please *email* the **html** version of that file to me with the name `[LastF]_F19_SelfEvaluation.html` (with `LastF` meaning your last name followed by your first initial, i.e., mine would be called `SchmittC_F19_SelfEvaluation.html`). I must receive this file by **December 14, 2023** at the earliest, and by **Midnight of the Final Exam Date** at the latest.
-
-***
-
-### Overall Impression
-
-***
-
-In place of my name as author on this Markdown file, please insert your own, along with the date on which you completed this self-assessment. In place of the RuPaul GIF, above, please choose a GIF of a drag queen that best exemplifies your overall feelings about what you learned/accomplished in this course. Additionally, replace the `The following self evaluation...` text below your GIF with a three sentence summary of your experience in the class and what you take away from it to accompany that GIF. You may also choose a catchy title.
-
-***
 
 ### What were you asked to do?
 
 ***
 
-Please give me a bulleted/numbered list of each task you were asked to do for this course. Where relevant, please also link the *html* version of the file representing each task, in your own repos, to the bulleted entry for that task.<br><br><br><br><br><br>
+Please give me a bulleted/numbered list of each task you were asked to do for this course. Where relevant, please also link the *html* version of the file representing each task, in your own repos, to the bulleted entry for that task.<br><br>
+
+My GitHub: (https://github.com/lilliansoccer10) <br>
+
+
+- Assigned Readings 
+- Modules 1-23: (https://github.com/lilliansoccer10/AN588-Modules-BackUp) <br>
+- Homework 1: Push it! (https://github.com/lilliansoccer10/AN588-Week-2-holdenl/blob/main/holdenl_FinalHomeworkCode_01.html) <br>
+- Homework 2: Titis in the Midst ... (https://github.com/lilliansoccer10/AN588-Week-3-holdenl/blob/main/holdenl_FinalHomeworkCode_02.html) <br>
+- Homework 3: Some of my Best Friends are Zombies (https://github.com/lilliansoccer10/AN588_Zombies_holdenl/blob/main/holdenl_FinalHomeworkCode_03.html) <br>
+- Homework 4: What's Your Malfunction? (https://github.com/lilliansoccer10/AN588_Malfunction_holdenl/blob/main/holdenl_FinalHomeworkCode_04.html) <br>
+- Homework 5: Boots for Days! (https://github.com/lilliansoccer10/AN588_Boots_holdenl/blob/main/holdenl_FinalHomeworkCode_05.html) <br>
+- Group Presentation and R Vignette: (https://github.com/erin1928/Statistical-Vignette/blob/main/Goodness-of-Fit-Tests.html) <br>
+- Replication Analysis: () <br>
 
 ***
 
@@ -62,7 +40,24 @@ Please give me a bulleted/numbered list of each task you were asked to do for th
 
 ***
 
-Please let me know how many of the above tasks you accomplished. If any of them were accomplished later than stipulated, please note that. If you contacted me about them being late (and we discussed it and I said it was ok), please note that, too. You may provide a bulleted/numbered list matching the one above.<br><br><br><br><br><br>
+Please let me know how many of the above tasks you accomplished. If any of them were accomplished later than stipulated, please note that. If you contacted me about them being late (and we discussed it and I said it was ok), please note that, too. You may provide a bulleted/numbered list matching the one above.<br><br>
+
+I completed all assigned readings and modules by class the week they were assigned, unless I did not understand and had to complete them after going over issues in class. 
+
+- Modules 1-23: (https://github.com/lilliansoccer10/AN588-Modules-BackUp) <br>
+
+I completed all of the homework assignments on time with minimal adjustments (if any) after the due date. 
+
+- Homework 1: Push it! (https://github.com/lilliansoccer10/AN588-Week-2-holdenl/blob/main/holdenl_FinalHomeworkCode_01.html) <br>
+- Homework 2: Titis in the Midst ... (https://github.com/lilliansoccer10/AN588-Week-3-holdenl/blob/main/holdenl_FinalHomeworkCode_02.html) <br>
+- Homework 3: Some of my Best Friends are Zombies (https://github.com/lilliansoccer10/AN588_Zombies_holdenl/blob/main/holdenl_FinalHomeworkCode_03.html) <br>
+- Homework 4: What's Your Malfunction? (https://github.com/lilliansoccer10/AN588_Malfunction_holdenl/blob/main/holdenl_FinalHomeworkCode_04.html) <br>
+- Homework 5: Boots for Days! (https://github.com/lilliansoccer10/AN588_Boots_holdenl/blob/main/holdenl_FinalHomeworkCode_05.html) <br>
+
+I completed the group project and replication analysis on time. 
+
+- Group Presentation and R Vignette: (https://github.com/erin1928/Statistical-Vignette/blob/main/Goodness-of-Fit-Tests.html) <br>
+- Replication Analysis: () <br>
 
 ***
 
@@ -70,7 +65,9 @@ Please let me know how many of the above tasks you accomplished. If any of them 
 
 ***
 
-Please let me know how well you feel you accomplished your tasks, in a general sense. What do you feel you did the best, and what did you do the least well? What was the hardest part for you? Did your work/understanding/ease improve over the course of the semester?<br><br><br><br><br><br>
+Please let me know how well you feel you accomplished your tasks, in a general sense. What do you feel you did the best, and what did you do the least well? What was the hardest part for you? Did your work/understanding/ease improve over the course of the semester?<br><br>
+
+In a general sense, I believe that I completed all of the tasks assigned to me to the best of my ability. I have never taken a statistics class or a class involving R, so I believe I did an outstanding job, considering. I spent numerous hours on work for this class and countless nights staying up late trying to trouble-shoot issues I was having. When I had issues, I went to office hours when I had time as my schedule as a part tinme graduate student and working part time to pay for school limits my availability. Google was also my best friend in this class! The assignment that I believe I did best on was the group vignette. I was responsible for the Anderson Darling Test and Final Challenge and feel as though I did a great job explaining each step of the ad.test() function within this assignment. This actually was commented on by a peer at the end of our presentation along with finding it helpful to include an example of a test that does not work well with a set of data, which was what I worked on as well. 
 
 ***
 
@@ -78,39 +75,56 @@ Please let me know how well you feel you accomplished your tasks, in a general s
 
 ***
 
-This may be in relation to previous knowledge, or in relation to future/planned work.<br><br><br><br><br><br><br><br>
+This may be in relation to previous knowledge, or in relation to future/planned work.<br><br>
 
 ***
 
 ### What did you learn from all this?
 
+
 ***
 
-Please name at least three things you feel you learned in this course.<br><br><br><br><br><br><br><br>
+Please name at least three things you feel you learned in this course.<br><br>
+
+I learned ... 
+
+- How to work with team members in an efficient way using constructive criticism to improve their work as well as my own.
+- How to import data into R (ex. read.csv)
+- How to organize data in R (ex. piping)
+- How to plot data in R (ex. ggplot)
+- How to analyze data in R, recognizing statistical significance by looking at alpha values, p-values, and much more in R. 
+- How to properly knit files in R in order to display my code and findings in a presentable way. 
+- How to use bootstrapping to estimate confidence intervals, standard errors, hypothesis testing and much more. 
+
 
 ***
 
 ### What did your learn about teamwork in this course? How did the readings on teamwork foster this understanding? How did the teamwork experiences?
 
+I learned a lot about teamwork within this course. The readings on teamwork helped to foster this understanding to provide a resource that I went to when I was struggling with certain aspects of teammwork including how to give constructive criticism without sounding rude. I tend to come off in a way that is not how I intend to, so reading how to give constructive criticism properly helped me a lot. The teamwork experiences involved in peer-commentary aided in my ability to use collaboration and constructive criticism to better improve my work and to help others improve theirs. In working on the vignete assignment, I found that we had to coordinate meeting in person as well as on zoom, which was difficult at times, but much appreciated. 
+
 ***
 
-<br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br>
 
 ***
 
 ### How did the Peer Commentary process and Group Project relate, if at all, to what you view as your successes or difficulties in this course?
 
+ -- I think that the peer commentary and group project related because once we each assigned ourselves part of the presentation, we would peer-review each others work and use constructive criticism to do so. We also practiced our presentation and gave constructive feedback on that as well which helped to better improve the presentation, overall. --
+
 ***
 
-<br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br>
 
 ***
 
 ### What, if anything, of lasting value do you take away from this experience? If nothing, what would you do differently if you were to start over in this course? 
+I believe that this course has gave me the introduction to R that I needed to be able to succeed in the field of ecology as I wish to do so. I wanted to take this course because I know how important of a tool R is in the scientific community. I am excited that I can walk away from it with a basic understanding of R and how it can be used to analyze, plot, organize data, and much more. 
 
 ***
 
-<br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br>
 
 ***
 
@@ -118,7 +132,7 @@ Please name at least three things you feel you learned in this course.<br><br><b
 
 ***
 
-<br><center>[insert letter grade here]</center><br>
+<br><center>[A]</center><br>
 
 ***
 
