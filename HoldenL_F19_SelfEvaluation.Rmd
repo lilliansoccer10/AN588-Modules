@@ -16,6 +16,8 @@ knitr::opts_chunk$set(echo = TRUE)
 <center><p><img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/31174a30-d884-4729-a778-11f3328b381a/d79r3xh-3a9c1b00-af98-4e2c-9f0e-5a947af5b59f.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzMxMTc0YTMwLWQ4ODQtNDcyOS1hNzc4LTExZjMzMjhiMzgxYVwvZDc5cjN4aC0zYTljMWIwMC1hZjk4LTRlMmMtOWYwZS01YTk0N2FmNWI1OWYuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.ycN6ayZ40RpgOJgKxSFUahVXQpx-2sY0gaYZKWFdcw4" style="border:5px solid black"></p>
 </center><br>  
 
+<center>The following self evaluation depicts the tedious journey I have been on in this course, as someone who has never taken a statistics course or worked in R before. I am thankful for all that I have learned and I am confident in stating that I am walking away with a good understanding of the various different uses of R in statistical analysis. As time went on in the semester, trouble-shooting issues I ran into became much easier and my confidence in code grew as well. </center><br> 
+
 
 ### What were you asked to do?
 
@@ -40,6 +42,7 @@ My GitHub: (https://github.com/lilliansoccer10) <br>
 - Peer Commentary Homework 5: (https://github.com/Brothamer/AN588_Boots_baroth/blob/main/holdenl_PeerCommentary_baroth_05.html) <br>
 - Group Presentation and R Vignette: (https://github.com/erin1928/Statistical-Vignette/blob/main/Goodness-of-Fit-Tests.html) <br>
 - Replication Analysis: (https://github.com/lilliansoccer10/holdenl-data-replication-assignment/blob/main/holdenl-data-replication-assignment.html) <br>
+
 
 ***
 
@@ -136,7 +139,7 @@ I learned a lot about teamwork within this course. The readings on teamwork help
 
 ***
 
- -- I think that the peer commentary and group project related because once we each assigned ourselves part of the presentation, we would peer-review each others work and use constructive criticism to do so. We also practiced our presentation and gave constructive feedback on that as well which helped to better improve the presentation, overall. --
+I think that the peer commentary and group project related because once we each assigned ourselves part of the presentation, we would peer-review each others work and use constructive criticism to do so. We also practiced our presentation and gave constructive feedback on that as well which helped to better improve the presentation, overall. I think that overall this helped me troubleshoot and improve my assignments helping me be more successful in the course. Difficulties that arose were easier to manage when others described they were going through the same issue as well and how they went about trying to solve it. 
 
 
 
@@ -148,7 +151,7 @@ I learned a lot about teamwork within this course. The readings on teamwork help
 
 ***
 
-I believe that this course has gave me the introduction to R that I needed to be able to succeed in the field of ecology as I wish to do so. I wanted to take this course because I know how important of a tool R is in the scientific community. This course also helped me with constructive criticism, accepting it and giving it. Patience was learned as well as it took a long time to trouble-shoot for most if not all assignments I completed. 
+I believe that this course has gave me the introduction to R that I needed to be able to succeed in the field of ecology as I wish to do so. I wanted to take this course because I know how important of a tool R is in the scientific community. This course also helped me learn more about constructive criticism, accepting it as well as giving it. Patience was learned as well as it took a long time to trouble-shoot for most, if not all, assignments I completed. 
 
 
 
