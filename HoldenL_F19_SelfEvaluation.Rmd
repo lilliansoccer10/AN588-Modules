@@ -97,7 +97,7 @@ This may be in relation to previous knowledge, or in relation to future/planned 
 
 ***
 
-Since starting this course, statistics seemed incredibly overwhelming to me as well as project design. With the use of R, I think it helps take the load off quite a bit. R is very fascinating to me, and I am excited to use it in future projects in my career as an ecologist. 
+Since starting this course, statistics seemed incredibly overwhelming to me as well as project design. With the use of R, I think it helps take the load off quite a bit. I am excited to use it in future projects in my career as an ecologist. It will be a useful tool to analyze data and determine significance of results that I may produce in future work. 
 
 
 
