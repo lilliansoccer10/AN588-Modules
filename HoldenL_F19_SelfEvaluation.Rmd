@@ -11,6 +11,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+<br>
+
 <center><font size="+2"><b>Phew ... I Made It!</b></font></center><br>
 
 <center><p><img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/31174a30-d884-4729-a778-11f3328b381a/d79r3xh-3a9c1b00-af98-4e2c-9f0e-5a947af5b59f.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzMxMTc0YTMwLWQ4ODQtNDcyOS1hNzc4LTExZjMzMjhiMzgxYVwvZDc5cjN4aC0zYTljMWIwMC1hZjk4LTRlMmMtOWYwZS01YTk0N2FmNWI1OWYuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.ycN6ayZ40RpgOJgKxSFUahVXQpx-2sY0gaYZKWFdcw4" style="border:5px solid black"></p>
